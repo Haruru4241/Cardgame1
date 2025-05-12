@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d059b6d0ea1364eb386929186a645d, type: 3}
+  m_Name: TurnCost-1
+  m_EditorClassIdentifier: 
+  processorName: "\uBCF5\uD569 \uD6A8\uACFC"
+  entries:
+  - signal: 2
+    actions:
+    - {fileID: 11400000, guid: 91dadfddd4081b441b6e27eff20b9f2c, type: 2}
+  - signal: 5
+    actions:
+    - {fileID: 11400000, guid: e1f542a913b4f94499aaf4fc9028c040, type: 2}
