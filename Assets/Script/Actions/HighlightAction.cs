@@ -6,7 +6,7 @@ public class HighlightAction : CardAction
 {
     public bool highlight = true;
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         card.BaseCard.transform.localScale = highlight ? Vector3.one * 1.1f : Vector3.one;
     }

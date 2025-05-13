@@ -15,9 +15,9 @@ public class DoubleNextEffectAction : CardAction
     [Tooltip("현재 효과 뒤에 몇 번 더 반복할지")]
     public int repeatCount = 2;
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
-        GetFunction(null)?.Invoke(null);
+        GetFunction(processor)?.Invoke(null);
     }
 
     public override Func<object, object> GetFunction(Processor processor)
@@ -27,7 +27,7 @@ public class DoubleNextEffectAction : CardAction
             // 선택 모드 진입: HandPile 기준으로 선택
             var candidates = DeckManager.Instance.HandPile.Cards.ToList();
             var selState = GameManager.Instance.SelectState as SelectState;
-            selState.StartSelection(candidates, 1, list =>
+            selState.StartSelection(candidates, 1, processor, list =>
             {
                 var batch = new List<Processor>();
                 foreach (var ci in list)

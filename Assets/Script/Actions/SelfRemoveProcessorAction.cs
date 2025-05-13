@@ -14,7 +14,7 @@ public class SelfRemoveProcessorAction : CardAction
         };
     }
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         var proc = new Processor("턴 종료 제거", false, card);
         proc.Register(signal, GetFunction(proc));

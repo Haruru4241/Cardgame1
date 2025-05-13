@@ -15,9 +15,9 @@ public class SelectDestroyAction : CardAction
     [Tooltip("프로세서 이름")]
     public string processorName = "SelectAndDestroy";
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
-        GetFunction(null)?.Invoke(null);
+        GetFunction(processor)?.Invoke(null);
     }
 
     public override Func<object, object> GetFunction(Processor processor)
@@ -32,12 +32,14 @@ public class SelectDestroyAction : CardAction
             selectState.StartSelection(
                 candidates,
                 requiredCount,
+                processor,
                 selectedList =>
                 {
                     // 3) 선택된 카드들에 OnDestroy 신호 발사
                     foreach (var ci in selectedList)
                         ci.Fire(SignalType.OnDestroy);
                 }
+                
             );
             return null;
         };

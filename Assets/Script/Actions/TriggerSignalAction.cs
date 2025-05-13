@@ -20,7 +20,7 @@ public class TriggerSignalAction : CardAction
         };
     }
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         // 즉시 해당 시그널을 카드에 보냅니다.
         card.Fire(signal);

@@ -17,6 +17,7 @@ public class SelectState : GameStateBase
     public void StartSelection(
         List<CardInstance> candidates,
         int requiredCount,
+        Processor processor,
         Action<List<CardInstance>> onSelected
     )
     {
@@ -26,16 +27,17 @@ public class SelectState : GameStateBase
             ReturnToPreviousState();
             return;
         }
+        if (GameManager.Instance.CurrentState==this)Debug.Log("재진입 에러");
 
         _candidateInstances = candidates;
         _requiredCount = Mathf.Max(1, requiredCount);
         _onSelected = onSelected;
+        tokenSource = processor;
         selected.Clear();
 
         ChangeState(this);
-        //tokenSource=ReactionStackManager.Instance.CurrentProcessor;
-        //ReactionStackManager.Instance.CurrentProcessor.UpdateHandlerToken(this);
-
+        GameManager.Instance._logs += string.Format(" 선택 모드 진입 ");
+            tokenSource.UpdateHandlerToken(this);
     }
     private void CompleteSelection()
     {
@@ -44,11 +46,13 @@ public class SelectState : GameStateBase
             .Select(bc => bc.cardInstance)
             .ToList();
         var onSelected = _onSelected;
+        GameManager.Instance._logs += string.Format("선택 모드 탈출");
 
         // 3) 클린업 & 복귀
         ChangeState(GameManager.Instance.MainState);
         
-        //tokenSource.UpdateHandlerToken(tokenSource);
+        tokenSource.UpdateHandlerToken(tokenSource);
+
         // 2) 콜백 호출
         onSelected?.Invoke(result);
     }

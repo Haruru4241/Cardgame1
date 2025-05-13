@@ -33,8 +33,11 @@ public struct Token
         // 참조 동일성으로 비교
         if (ReferenceEquals(Owner, expectedSource))
         {
+            GameManager.Instance._logs += string.Format("토큰 처리 성공");
             Callback?.Invoke();
             Callback = null;  // 실행 후 콜백 제거
+            return;
         }
+        GameManager.Instance._logs += string.Format("토큰 처리 실패");
     }
 }

@@ -16,7 +16,7 @@ public class CompositeProcessorAction : CardAction
     public List<SignalActionEntry> entries;
 
     // 자기 자신에게 실행
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         var proc = new Processor(processorName, false, card, card);
 

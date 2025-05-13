@@ -7,7 +7,7 @@ public class MoveToPileAction : CardAction
     public enum TargetPileType { Used, Discard, Exhaust, Deck, Hand, Destroy}
     public TargetPileType targetPile;
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         Apply(card);
     }

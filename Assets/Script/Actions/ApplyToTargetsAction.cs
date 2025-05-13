@@ -16,7 +16,7 @@ public class ApplyToTargetsAction : CardAction
     [Tooltip("적용할 Signal별 액션 목록")]
     public List<SignalActionEntry> entries;
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         // 1. 대상 카드 리스트 검색
         var targets = targetSelector.GetTargets(card);

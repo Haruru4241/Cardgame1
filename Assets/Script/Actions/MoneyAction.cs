@@ -8,7 +8,7 @@ public class MoneyAction : CardAction
     public MoneyOp operation = MoneyOp.Add;
     public int amount = 1;
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         Apply();
     }

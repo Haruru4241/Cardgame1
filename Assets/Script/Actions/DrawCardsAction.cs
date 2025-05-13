@@ -6,7 +6,7 @@ public class DrawCardsAction : CardAction
 {
     [Header("드로우 수")]
     public int drawCount = 3;
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         var func = GetFunction(null);
         func?.Invoke(null);  // input이 필요 없으면 null

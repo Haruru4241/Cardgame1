@@ -67,7 +67,7 @@ public class CardInstance
         {
             processor.Register(signal, _ =>
             {
-                action.Execute(this);
+                action.Execute(this, processor);
                 return null;
             });
         }

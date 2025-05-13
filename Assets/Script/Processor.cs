@@ -1,7 +1,10 @@
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
 public class Processor
 {
     public string SourceName { get; }
@@ -12,6 +15,9 @@ public class Processor
     private List<SignalHandler> handlers = new();
     public Token _handlerToken;
 
+    // 새로 추가된 필드들
+    private Queue<SignalHandler> _handlerQueue;
+
     public Processor(string sourceName, bool isBase, CardInstance owner, CardInstance source = null)
     {
         SourceName = sourceName;
@@ -19,6 +25,7 @@ public class Processor
         Owner = owner;
         Source = source ?? owner;
         _handlerToken = new Token(this, null);
+        //_handlerQueue = new Queue<SignalHandler>();
     }
 
     public void Register(SignalType signal, Func<object, object> func)
@@ -32,72 +39,65 @@ public class Processor
             if (handler.Signal == signal)
                 yield return handler;
     }
+
     public void SelfDestruct()
     {
         Owner.RemoveProcessor(this);
-    }// 등록된 핸들러 중 특정 신호를 처리하는 핸들러가 있는지 검사합니다.
-    public bool HasRegistration(SignalType signal)
-    {
-        return handlers.Any(h => h.Signal == signal);
     }
 
-    // 핸들러 토큰 등록
     public void UploadHandlerToken(object source, Action callback)
     {
-        // 이미 콜백이 남아 있으면(=토큰 발행된 상태) 대기
-        if (!_handlerToken.SourceEquals(source)&&_handlerToken.Callback!=null)
+        if (!_handlerToken.SourceEquals(source))
         {
-            GameManager.Instance._logs += " 핸들러재발행 ";
+            GameManager.Instance._logs += " 잘못된 소유주 ";
             return;
         }
         GameManager.Instance._logs += " 핸들러발행 ";
         _handlerToken.Callback = callback;
     }
+
     public Token UpdateHandlerToken(object source)
     {
-        GameManager.Instance._logs += " 핸들러업데이트 ";
         _handlerToken.UpdateToken(source);
         return _handlerToken;
     }
-    
-    // 핸들러 토큰 실행
+
     public void ConsumeHandlerToken(object source)
     {
-        GameManager.Instance._logs += " 토큰 처리 ";
         _handlerToken.InvokeIfSource(source);
     }
 
-
-    public void ProcessSignal(SignalType signal, Action onProcDone)
+    public void ProcessSignal(SignalType signal)
     {
-        // 1) 이 신호에 달린 핸들러들 목록을 복사해서
-        var handlerQueue = new Queue<Action<Action>>();
-        foreach (var h in GetHandlersFor(signal))
+        // 아직 큐가 없으면 새로 만들기
+        //if (_handlerQueue==null&&_handlerQueue.Count == 0)
+        if (_handlerQueue==null)
         {
-            var copy = h;
-            handlerQueue.Enqueue(done =>
-            {
-                // 동기 처리 예시
-                copy.Process(null);
-                done();
-            });
+            _handlerQueue = new Queue<SignalHandler>(GetHandlersFor(signal));
+            GameManager.Instance._logs += string.Format(" 프로세서 큐 생성 {0}개 ", _handlerQueue.Count);
         }
-        // 2) 첫 핸들러부터 순차 처리
-        // UploadHandlerToken(this, () => ProcessNextHandler(handlerQueue, onProcDone));
-        // ConsumeHandlerToken(this);
+        GameManager.Instance._logs += string.Format(" {0} 신호 받음 ", signal);
 
-        ProcessNextHandler(handlerQueue, onProcDone);
+        // 토큰 등록 → 처리 재개
+        UploadHandlerToken(this, () => ProcessNextHandler());
+        ConsumeHandlerToken(this);
     }
 
-    void ProcessNextHandler(Queue<Action<Action>> q, Action onProcDone)
+    private void ProcessNextHandler()
     {
-        if (q.Count == 0)
+        if (_handlerQueue.Count == 0)
         {
-            onProcDone();
+            GameManager.Instance._logs += string.Format(" 프로세서 종료 ");
+            
+            _handlerQueue=null;
+            ReactionStackManager.Instance._queue.RemoveAt(0);
+            ReactionStackManager.Instance.ProcessNext();
             return;
         }
 
-        var work = q.Dequeue();
-        work(() => ProcessNextHandler(q, onProcDone));
+        // 다음 SignalHandler 꺼내서 동기 실행
+        UploadHandlerToken(this, () => ProcessNextHandler());
+        _handlerQueue.Dequeue().Process(this);
+        ConsumeHandlerToken(this);
     }
 }

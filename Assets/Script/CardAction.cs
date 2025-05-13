@@ -4,7 +4,7 @@ using System;
 public abstract class CardAction : ScriptableObject
 {
     // 즉시 실행
-    public virtual void Execute(CardInstance card)
+    public virtual void Execute(CardInstance card,Processor processor)
     {
         var func = GetFunction(null); // Processor 정보가 필요 없을 때는 null
         func?.Invoke(card);           // 카드 자체를 input으로 넘길 수도 있고 null도 가능

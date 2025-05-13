@@ -13,7 +13,7 @@ public class CostReducerAction : CardAction
         return input => (int)input + delta;
     }
 
-    public override void Execute(CardInstance card)
+    public override void Execute(CardInstance card, Processor processor)
     {
         // 개별 실행 시 직접 프로세서 생성도 가능
         var proc = new Processor("코스트 감소", false, card);
