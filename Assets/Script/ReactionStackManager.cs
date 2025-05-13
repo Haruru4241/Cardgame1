@@ -1,100 +1,85 @@
-// ReactionStackManager.cs
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public struct ReactionEntry
 {
     public SignalType Signal;
-    public Processor Proc;
+    public Processor  Proc;
+
     public ReactionEntry(SignalType signal, Processor proc)
     {
         Signal = signal;
-        Proc = proc;
+        Proc   = proc;
     }
 }
+
 public class ReactionStackManager : MonoBehaviour
 {
     public static ReactionStackManager Instance { get; private set; }
 
-    // LIFO 배치, FIFO 항목
-    public readonly List<ReactionEntry> _queue = new List<ReactionEntry>();
-    // 지금 처리 중인 엔트리를 저장할 필드
-    private ReactionEntry _currentEntry;
-
-    // 외부에서 참조할 수 있도록 프로퍼티 제공
-    public Processor CurrentProcessor => _currentEntry.Proc;
-
-    // 단일 매니저 토큰
-    public Token _managerToken;
-
+    // 배치 단위로 보관하는 LIFO 스택
+    private readonly Stack<List<ReactionEntry>> _stack = new Stack<List<ReactionEntry>>();
     void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    public void UploadManagerToken(object source, Action callback)
-    {
-        GameManager.Instance._logs += $"{_queue.Count}: 업로드매니저토큰 ";
-        _managerToken = new Token(source, callback);
-    }
-
-    public void ConsumeManagerToken(object source)
-    {
-        GameManager.Instance._logs += $"{_queue.Count}: 컨슘매니저토큰 ";
-        _managerToken.InvokeIfSource(source);
-    }
-        public Token UpdateManagerToken(object source)
-    {
-        GameManager.Instance._logs += " 핸들러업데이트 ";
-        _managerToken.UpdateToken(source);
-        return _managerToken;
-    }
-
+    /// <summary>
+    /// Fire(signal) 시 호출합니다.
+    /// 리스트(reactingProcs) 내부 순서는 유지(FIFO),
+    /// 그러나 배치 단위 자체는 나중 푸시된 것이 먼저 처리(LIFO).
+    /// </summary>
     public void PushReactions(SignalType signal, List<Processor> reactingProcs)
     {
-        // 1) reactingProcs → ReactionEntry 배치
+        // 리스트를 한 번에 ReactionEntry 배치로 변환
         var batch = reactingProcs
-            .ConvertAll(p => new ReactionEntry(signal, p));
-        GameManager.Instance._logs += $"{batch.Count}: 추가 배치 수 ";
+            .Select(proc => new ReactionEntry(signal, proc))
+            .ToList();
 
-        // 2) 기존 큐 뒤에 붙이고, 큐 전체를 배치 앞에 덮어쓰기
-        batch.AddRange(_queue);
-        _queue.Clear();
-        _queue.AddRange(batch);
+        // 배치 단위로 스택에 푸시
+        _stack.Push(batch);
 
-        // 3) 즉시 처리 시작
-        var next = _queue[0].Proc;
-        UploadManagerToken(next, ProcessNext);
-        ConsumeManagerToken(next);
+        // 항상 즉시 처리 시작
+        ProcessNext();
     }
 
-    public void ProcessNext()
+    /// <summary>
+    /// 스택에서 배치 하나를 Pop하여 순차 처리하고,
+    /// 완료 시 다음 배치로 계속 이어갑니다.
+    /// </summary>
+    private void ProcessNext()
     {
-        GameManager.Instance._logs += $"{_queue.Count}: 프로세스넥스트 ";
-
-        if (_queue.Count == 0)
+        if (_stack.Count == 0)
         {
-            GameManager.Instance._logs += " 큐 종료 ";
             DeckManager.Instance.UpdateAllCardUIs();
             return;
         }
+        var batch = _stack.Pop();
+        ProcessBatch(batch, ProcessNext);
+    }
 
-        // 1) FIFO로 꺼내 처리
-        _currentEntry = _queue[0];
-
-        // 2) 다음 호출 예약
-        UploadManagerToken(_currentEntry.Proc, () =>
+    /// <summary>
+    /// 한 배치 안의 ReactionEntry들을 FIFO 순서로 실행
+    /// </summary>
+    private void ProcessBatch(List<ReactionEntry> batch, Action onBatchDone)
     {
-        GameManager.Instance._logs += $"{_queue.Count}: 프로세스 종료 ";
-        // 완료 시점: 진행 중 항목 제거
-        _queue.RemoveAt(0);
-        ProcessNext();
-    });
-
-
-        // 3) 해당 프로세서에 신호 전달
-        _currentEntry.Proc.ProcessSignal(_currentEntry.Signal);
+        int index = 0;
+        // 재귀 콜백
+        Action next = null;
+        next = () =>
+        {
+            if (index >= batch.Count)
+            {
+                onBatchDone();
+                return;
+            }
+            var entry = batch[index++];
+            entry.Proc.ProcessSignal(entry.Signal, next);
+        };
+        // 첫 실행
+        next();
     }
 }

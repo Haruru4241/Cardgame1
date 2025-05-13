@@ -6,21 +6,22 @@ using System;
 /// </summary>
 public struct Token
 {
-    public object Source;    // 토큰 발행 주체 (Processor 인스턴스 등)
+    public object Owner;    // 토큰 소유 주체
     public Action Callback;  // 실행할 콜백
 
     public Token(object source, Action callback)
     {
-        Source = source;
+        Owner = source;
         Callback = callback;
     }
     public void UpdateToken(object source)
     {
-        Source = source;
+        Owner = source;
     }
+    public bool IsOwner(object candidate) => ReferenceEquals(candidate, Owner);
     public bool SourceEquals(object source)
     {
-        if (ReferenceEquals(Source, source))
+        if (ReferenceEquals(Owner, source))
         {
             return true;
         }
@@ -30,7 +31,7 @@ public struct Token
     public void InvokeIfSource(object expectedSource)
     {
         // 참조 동일성으로 비교
-        if (ReferenceEquals(Source, expectedSource))
+        if (ReferenceEquals(Owner, expectedSource))
         {
             Callback?.Invoke();
             Callback = null;  // 실행 후 콜백 제거

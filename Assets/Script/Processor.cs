@@ -1,20 +1,15 @@
 
-// Processor.cs
-using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System;
 public class Processor
 {
     public string SourceName { get; }
     public bool IsBase { get; }
     public CardInstance Owner { get; }
     public CardInstance Source { get; }
-    public int idx = 0;
 
-    private readonly List<SignalHandler> handlers = new List<SignalHandler>();
-
-    // 핸들러 재개 토큰
+    private List<SignalHandler> handlers = new();
     public Token _handlerToken;
 
     public Processor(string sourceName, bool isBase, CardInstance owner, CardInstance source = null)
@@ -23,6 +18,7 @@ public class Processor
         IsBase = isBase;
         Owner = owner;
         Source = source ?? owner;
+        _handlerToken = new Token(this, null);
     }
 
     public void Register(SignalType signal, Func<object, object> func)
@@ -31,23 +27,31 @@ public class Processor
     }
 
     public IEnumerable<SignalHandler> GetHandlersFor(SignalType signal)
-        => handlers.Where(h => h.Signal == signal);
-
-    public void SelfDestruct() => Owner.RemoveProcessor(this);
+    {
+        foreach (var handler in handlers)
+            if (handler.Signal == signal)
+                yield return handler;
+    }
+    public void SelfDestruct()
+    {
+        Owner.RemoveProcessor(this);
+    }// 등록된 핸들러 중 특정 신호를 처리하는 핸들러가 있는지 검사합니다.
     public bool HasRegistration(SignalType signal)
-        => handlers.Any(h => h.Signal == signal);
+    {
+        return handlers.Any(h => h.Signal == signal);
+    }
 
     // 핸들러 토큰 등록
     public void UploadHandlerToken(object source, Action callback)
     {
         // 이미 콜백이 남아 있으면(=토큰 발행된 상태) 대기
-        if (!_handlerToken.SourceEquals(this) && idx!=0)
+        if (!_handlerToken.SourceEquals(source)&&_handlerToken.Callback!=null)
         {
             GameManager.Instance._logs += " 핸들러재발행 ";
             return;
         }
         GameManager.Instance._logs += " 핸들러발행 ";
-        _handlerToken = new Token(source, callback);
+        _handlerToken.Callback = callback;
     }
     public Token UpdateHandlerToken(object source)
     {
@@ -55,7 +59,7 @@ public class Processor
         _handlerToken.UpdateToken(source);
         return _handlerToken;
     }
-
+    
     // 핸들러 토큰 실행
     public void ConsumeHandlerToken(object source)
     {
@@ -63,48 +67,37 @@ public class Processor
         _handlerToken.InvokeIfSource(source);
     }
 
-    /// <summary>
-    /// 핸들러를 순차 실행하고, 모든 완료 후 저장된 매니저 토큰을 실행합니다.
-    /// </summary>
-    public void ProcessSignal(SignalType signal)
+
+    public void ProcessSignal(SignalType signal, Action onProcDone)
     {
-        var list = GetHandlersFor(signal).ToList();
-
-        if (list.Count == 0)
+        // 1) 이 신호에 달린 핸들러들 목록을 복사해서
+        var handlerQueue = new Queue<Action<Action>>();
+        foreach (var h in GetHandlersFor(signal))
         {
-            // 핸들러 없으면 바로 매니저 토큰 실행
-            ReactionStackManager.Instance.ConsumeManagerToken(this);
-            return;
+            var copy = h;
+            handlerQueue.Enqueue(done =>
+            {
+                // 동기 처리 예시
+                copy.Process(null);
+                done();
+            });
         }
-        ReactionStackManager.Instance.UpdateManagerToken(this);
+        // 2) 첫 핸들러부터 순차 처리
+        // UploadHandlerToken(this, () => ProcessNextHandler(handlerQueue, onProcDone));
+        // ConsumeHandlerToken(this);
 
-        // 첫 핸들러 실행을 위한 토큰 준비
-        UploadHandlerToken(this, () => InvokeHandler(list));
-
-        ConsumeHandlerToken(this);
+        ProcessNextHandler(handlerQueue, onProcDone);
     }
 
-    private void InvokeHandler(List<SignalHandler> list)
+    void ProcessNextHandler(Queue<Action<Action>> q, Action onProcDone)
     {
-        if (idx >= list.Count)
+        if (q.Count == 0)
         {
-            // 모든 핸들러 완료 후 매니저 토큰 실행
-            ReactionStackManager.Instance.ConsumeManagerToken(this);
+            onProcDone();
             return;
         }
-        // 현재 핸들러 가져오기
-        var handler = list[idx];
 
-        // 다음 인덱스 예약
-        idx++;
-
-        // 다음 핸들러 토큰 예약
-        UploadHandlerToken(this, () => InvokeHandler(list));
-
-        // 동기 핸들러 실행
-        handler.Process(this);
-
-        // 이어서 다음
-        ConsumeHandlerToken(this);
+        var work = q.Dequeue();
+        work(() => ProcessNextHandler(q, onProcDone));
     }
 }

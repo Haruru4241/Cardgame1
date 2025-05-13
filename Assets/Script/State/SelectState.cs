@@ -12,7 +12,7 @@ public class SelectState : GameStateBase
     private int _requiredCount;
     private Action<List<CardInstance>> _onSelected;
     public SelectState(GameManager manager) : base(manager) { }
-    //public Token _token;
+    public Processor tokenSource;
 
     public void StartSelection(
         List<CardInstance> candidates,
@@ -20,27 +20,22 @@ public class SelectState : GameStateBase
         Action<List<CardInstance>> onSelected
     )
     {
-        GameManager.Instance._logs += string.Format(" 선택 모드 진입 ");
-        if (GameManager.Instance.CurrentState == GameManager.Instance.SelectState)
-        {
-            ChangeState(GameManager.Instance.MainState);
-            Debug.Log("선택 모드 재진입 오류");
-        }
         if (candidates == null || candidates.Count == 0)
         {
             Debug.LogWarning("선택 후보가 없습니다!");
             ReturnToPreviousState();
             return;
         }
-        ReactionStackManager.Instance.CurrentProcessor.UpdateHandlerToken(this);
-        //ReactionStackManager.Instance._managerToken.UpdateToken(this);
 
         _candidateInstances = candidates;
         _requiredCount = Mathf.Max(1, requiredCount);
         _onSelected = onSelected;
         selected.Clear();
 
-        ChangeState(GameManager.Instance.SelectState);
+        ChangeState(this);
+        //tokenSource=ReactionStackManager.Instance.CurrentProcessor;
+        //ReactionStackManager.Instance.CurrentProcessor.UpdateHandlerToken(this);
+
     }
     private void CompleteSelection()
     {
@@ -49,15 +44,13 @@ public class SelectState : GameStateBase
             .Select(bc => bc.cardInstance)
             .ToList();
         var onSelected = _onSelected;
-        ReactionStackManager.Instance.CurrentProcessor.UpdateHandlerToken(ReactionStackManager.Instance.CurrentProcessor);
 
+        // 3) 클린업 & 복귀
         ChangeState(GameManager.Instance.MainState);
+        
+        //tokenSource.UpdateHandlerToken(tokenSource);
         // 2) 콜백 호출
-        GameManager.Instance._logs += string.Format(" 선택 모드 종료 ");
         onSelected?.Invoke(result);
-        ReactionStackManager.Instance.ProcessNext();
-        //_token.InvokeIfSource(this);
-        //ReactionStackManager.Instance.CurrentProcessor.ConsumeHandlerToken(this);
     }
 
     public override void Enter()
@@ -86,8 +79,6 @@ public class SelectState : GameStateBase
 
     public override void Update()
     {
-        if (GameManager.Instance.CurrentState != this)
-            return;
         if (Input.GetKeyDown(gameManager.menuKey))
             ChangeState(gameManager.MenuState);
 
@@ -111,6 +102,7 @@ public class SelectState : GameStateBase
         }
         HandleShortcuts();
     }
+
 
     // 1) HandleShortcuts 메서드
     public override void HandleShortcuts()
