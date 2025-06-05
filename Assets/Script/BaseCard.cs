@@ -41,21 +41,6 @@ public class BaseCard : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
         OnCardUnhovered?.Invoke(this);
     }
 
-    [ContextMenu("▶ Show Signal–Processor Bindings")]
-    public void DebugLogBindings()
-    {
-        var bindings = cardInstance.GetSignalProcessorBindings();
-        if (bindings.Count == 0)
-        {
-            return;
-        }
-
-        foreach (var b in bindings)
-        {
-            Debug.Log($"Signal: {b.Signal}, Processor: \"{b.ProcessorName}\"");
-        }
-    }
-
     public void Setup(CardData data, CardInstance instance)
     {
         CardData = data;

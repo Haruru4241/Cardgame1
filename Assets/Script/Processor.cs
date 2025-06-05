@@ -13,7 +13,7 @@ public class Processor
     public CardInstance Source { get; }
 
     private List<SignalHandler> handlers = new();
-    public Token _handlerToken;
+    private Token _handlerToken;
 
     // 새로 추가된 필드들
     private Queue<SignalHandler> _handlerQueue;
@@ -25,7 +25,6 @@ public class Processor
         Owner = owner;
         Source = source ?? owner;
         _handlerToken = new Token(this, null);
-        //_handlerQueue = new Queue<SignalHandler>();
     }
 
     public void Register(SignalType signal, Func<object, object> func)
@@ -67,37 +66,39 @@ public class Processor
         _handlerToken.InvokeIfSource(source);
     }
 
-    public void ProcessSignal(SignalType signal)
+    public void ProcessSignal(SignalBus bus)
     {
-        // 아직 큐가 없으면 새로 만들기
-        //if (_handlerQueue==null&&_handlerQueue.Count == 0)
-        if (_handlerQueue==null)
+        // 1) 아직 큐가 없으면, 버스에 해당하는 핸들러들을 모아서 새로 생성
+        if (_handlerQueue == null)
         {
-            _handlerQueue = new Queue<SignalHandler>(GetHandlersFor(signal));
+            // 버스 내부에 담긴 SignalType을 사용
+            _handlerQueue = new Queue<SignalHandler>(GetHandlersFor(bus.Signal));
             GameManager.Instance._logs += string.Format(" 프로세서 큐 생성 {0}개 ", _handlerQueue.Count);
         }
-        GameManager.Instance._logs += string.Format(" {0} 신호 받음 ", signal);
+        GameManager.Instance._logs += string.Format(" {0} 신호 받음 ", bus.Signal);
 
         // 토큰 등록 → 처리 재개
-        UploadHandlerToken(this, () => ProcessNextHandler());
+        UploadHandlerToken(this, () => ProcessNextHandler(1));
         ConsumeHandlerToken(this);
     }
 
-    private void ProcessNextHandler()
+    private void ProcessNextHandler(int a)
     {
         if (_handlerQueue.Count == 0)
         {
             GameManager.Instance._logs += string.Format(" 프로세서 종료 ");
-            
-            _handlerQueue=null;
-            ReactionStackManager.Instance._queue.RemoveAt(0);
-            ReactionStackManager.Instance.ProcessNext();
+
+            _handlerQueue = null;
+            var bus = ReactionStackManager.Instance._busStack.Pop();
+            bus.DequeueNext();
+
+            ReactionStackManager.Instance.StartProcessing();
             return;
         }
 
         // 다음 SignalHandler 꺼내서 동기 실행
-        UploadHandlerToken(this, () => ProcessNextHandler());
-        _handlerQueue.Dequeue().Process(this);
+        UploadHandlerToken(this, () => ProcessNextHandler(1));
+        _handlerQueue.Dequeue().Process(null);
         ConsumeHandlerToken(this);
     }
 }

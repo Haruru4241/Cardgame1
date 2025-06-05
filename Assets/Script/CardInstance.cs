@@ -61,7 +61,7 @@ public class CardInstance
     {
         if (actions == null || actions.Count == 0) return;
 
-        var processor = new Processor($"CardData_{signal}", isBase: false, owner: this);
+        var processor = new Processor($"CardData_{signal}", isBase: false, owner: this, source: this);
 
         foreach (var action in actions)
         {
@@ -73,35 +73,6 @@ public class CardInstance
         }
 
         AddProcessor(processor);
-    }
-    public struct SignalProcessorBinding
-    {
-        public SignalType Signal;
-        public string ProcessorName;
-    }
-    public List<SignalProcessorBinding> GetSignalProcessorBindings()
-    {
-        var bindings = new List<SignalProcessorBinding>();
-
-        // for every processor on this card
-        foreach (var proc in processors)
-        {
-            // reflect over all possible SignalType values
-            foreach (SignalType sig in Enum.GetValues(typeof(SignalType)))
-            {
-                // if this processor has at least one handler for that signal
-                if (proc.GetHandlersFor(sig).Any())
-                {
-                    bindings.Add(new SignalProcessorBinding
-                    {
-                        Signal = sig,
-                        ProcessorName = proc.SourceName   // or whatever your Processor calls its name field
-                    });
-                }
-            }
-        }
-
-        return bindings;
     }
 
     // 공통 Processor 등록 도우미
@@ -153,17 +124,43 @@ public class CardInstance
 
     public void Fire(SignalType signal)
     {
-        // 1) 이 신호에 반응할 프로세서만 골라서 리스트 생성
+        // 1) 빈 버스 생성
+        var bus = new SignalBus(signal);
+
+        // 2) 이 신호(signal)에 반응할 프로세서만 걸러서 리스트 생성
         var reactingProcs = processors
             .Where(proc => proc.GetHandlersFor(signal).Any())
             .ToList();
 
         if (reactingProcs.Count == 0)
             return;
-        GameManager.Instance._logs+=" "+signal+" 파이어 시작 ";
 
-        // 2) 스택에 푸시
-        ReactionStackManager.Instance.PushReactions(signal, reactingProcs);
+        GameManager.Instance._logs += " " + signal + " 파이어 시작 ";
+
+        // 3) 걸러낸 프로세서 리스트를 버스에 태운다.
+        bus.AddPassengers(reactingProcs);
+
+        // 4) 최종적으로 ReactionStackManager에게 버스 전체를 전달
+        ReactionStackManager.Instance.PushBus(bus);
     }
+    public void Fire(SignalBus bus)
+    {
+        // 1) 빈 버스 생성
 
+        // 2) 이 신호(signal)에 반응할 프로세서만 걸러서 리스트 생성
+        var reactingProcs = processors
+            .Where(proc => proc.GetHandlersFor(bus.Signal).Any())
+            .ToList();
+
+        if (reactingProcs.Count == 0)
+            return;
+
+        GameManager.Instance._logs += " " + bus.Signal + " 파이어 시작 ";
+
+        // 3) 걸러낸 프로세서 리스트를 버스에 태운다.
+        bus.AddPassengers(reactingProcs);
+
+        // 4) 최종적으로 ReactionStackManager에게 버스 전체를 전달
+        ReactionStackManager.Instance.PushBus(bus);
+    }
 }

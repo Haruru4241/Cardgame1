@@ -47,10 +47,48 @@ public class DoubleNextEffectAction : CardAction
                     }
                 }
 
-                ReactionStackManager.Instance.PushReactions(SignalType.OnEffect, batch);
+                //ReactionStackManager.Instance.PushReactions(SignalType.OnEffect, batch);
+
+                var bus = new SignalBus(SignalType.OnEffect);
+
+                // 3) 걸러낸 프로세서 리스트를 버스에 태운다.
+                bus.AddPassengers(batch);
+
+                // 4) 최종적으로 ReactionStackManager에게 버스 전체를 전달
+                ReactionStackManager.Instance.PushBus(bus);
             });
 
             return null;
+            // 1) 빈 버스 생성
+
+
+            // // 선택 모드 진입: HandPile 기준으로 선택
+            // var candidates = DeckManager.Instance.HandPile.Cards.ToList();
+            // var selState = GameManager.Instance.SelectState as SelectState;
+            // selState.StartSelection(candidates, 1, processor, list =>
+            // {
+            //     var batch = new List<Processor>();
+            //     foreach (var ci in list)
+            //     {
+            //         // OnEffect 신호를 처리하는 프로세서 필터링
+            //         var original = ci.processors
+            //             .Where(p => p.GetHandlersFor(triggerSignal).Any())
+            //             .ToList();
+
+            //         if (original.Count == 0)
+            //             continue;
+
+            //         // repeatCount만큼 복제하여 하나의 배치로 구성
+            //         for (int i = 0; i < repeatCount; i++)
+            //         {
+            //             batch.AddRange(original);
+            //         }
+            //     }
+
+            //     ReactionStackManager.Instance.PushReactions(SignalType.OnEffect, batch);
+            // });
+
+            // return null;
         };
     }
 }

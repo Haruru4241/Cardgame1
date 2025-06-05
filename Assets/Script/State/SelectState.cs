@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Unity.VisualScripting;
 
 
 public class SelectState : GameStateBase
@@ -104,7 +105,8 @@ public class SelectState : GameStateBase
             ChangeState(gameManager.MainState);
             TurnManager.Instance.EndTurn();
         }
-        HandleShortcuts();
+        if (GameManager.Instance.CurrentState==this)
+            HandleShortcuts();
     }
 
 

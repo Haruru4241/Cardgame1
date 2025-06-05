@@ -3,26 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public struct ReactionEntry
-{
-    public SignalType Signal;
-    public Processor Proc;
-
-    public ReactionEntry(SignalType signal, Processor proc)
-    {
-        Signal = signal;
-        Proc = proc;
-    }
-}
-
 public class ReactionStackManager : MonoBehaviour
 {
     public static ReactionStackManager Instance { get; private set; }
-    public readonly List<ReactionEntry> _queue = new List<ReactionEntry>();
-    public ReactionEntry _currentEntry;
-
-    // 외부에서 참조할 수 있도록 프로퍼티 제공
-    public Processor CurrentProcessor => _currentEntry.Proc;
+    public Stack<SignalBus> _busStack = new Stack<SignalBus>();
+    public SignalBus _currentBus;
 
     void Awake()
     {
@@ -30,34 +15,32 @@ public class ReactionStackManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    public void PushReactions(SignalType signal, List<Processor> reactingProcs)
+    public void PushBus(SignalBus bus)
     {
-        // 새로 들어온 배치를 큐 앞에 삽입 (LIFO 배치, 내부는 FIFO 유지)
-        var batch = reactingProcs
-            .Select(proc => new ReactionEntry(signal, proc))
-            .ToList();
-        _queue.InsertRange(0, batch);
-        GameManager.Instance._logs += string.Format(" {0} 액션 시작 현재 {1} 추기 {2}", signal, _queue.Count, batch.Count);
+        if (bus == null || !bus.HasPassenger())
+            return;
 
-        // 항상 바로 처리 시작
-        ProcessNext();
+        for (int i = 0; i < bus.PassengerCount; i++)
+        {
+            _busStack.Push(bus);
+        }
+
+        // 처리 루프 시작 (이미 돌고 있으면 StartProcessing()에서 걸러짐)
+        StartProcessing();
     }
-
-    public void ProcessNext()
+    public void StartProcessing()
     {
-        if (_queue.Count == 0)
+        if (_busStack.Count == 0)
         {
             GameManager.Instance._logs += string.Format(" 프로세스 종료 ");
             DeckManager.Instance.UpdateAllCardUIs();
             return;
         }
-        
-        GameManager.Instance._logs += string.Format(" {0} 남은 현재 큐 ", _queue.Count);
 
         // 현재 작업은 큐의 맨 앞
-        _currentEntry = _queue[0];
+        _currentBus = _busStack.Peek();
 
         // 완료 콜백 안에서만 제거하고, 그다음 ProcessNext 호출
-        _currentEntry.Proc.ProcessSignal(_currentEntry.Signal);
+        _currentBus.PeekNextPassenger().ProcessSignal(_currentBus);
     }
 }

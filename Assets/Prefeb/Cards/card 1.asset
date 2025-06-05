@@ -42,7 +42,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
   onEffectActions:
   - {fileID: 11400000, guid: fc23655716b59ec4c94fababf9ac10ba, type: 2}
-  - {fileID: 11400000, guid: fc23655716b59ec4c94fababf9ac10ba, type: 2}
   onPlayedActions: []
   onDiscardActions: []
   onExhaustActions: []
