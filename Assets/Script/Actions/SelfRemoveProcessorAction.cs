@@ -1,23 +1,12 @@
 using UnityEngine;
 using System;
 [CreateAssetMenu(menuName = "CardGame/Actions/SelfRemoveAction")]
-public class SelfRemoveProcessorAction : CardAction
+public class SelfRemoveProcessorAction : BaseAction
 {
     public SignalType signal = SignalType.OnTurnEnd;
 
-    public override Func<object, object> GetFunction(Processor processor)
+    public override void Execute(SignalBus Bus)
     {
-        return _ =>
-        {
-            processor.SelfDestruct();
-            return null;
-        };
-    }
-
-    public override void Execute(CardInstance card, Processor processor)
-    {
-        var proc = new Processor("턴 종료 제거", false, card);
-        proc.Register(signal, GetFunction(proc));
-        card.AddProcessor(proc);
+        Bus.FrontBubble.OwnerProcessor.SelfDestruct();
     }
 }

@@ -22,3 +22,10 @@ MonoBehaviour:
     count: 3
   - cardData: {fileID: 11400000, guid: fe817ec0b649fcd43863ea3cb164214a, type: 2}
     count: 5
+  onTurnStart:
+  - {fileID: 11400000, guid: 81f15c7954875734b8d53f66177b4e15, type: 2}
+  - {fileID: 11400000, guid: 81f15c7954875734b8d53f66177b4e15, type: 2}
+  - {fileID: 11400000, guid: eef742540a4f5eb4393b39751b376256, type: 2}
+  - {fileID: 11400000, guid: eef742540a4f5eb4393b39751b376256, type: 2}
+  onTurnEnd:
+  - {fileID: 11400000, guid: c752c324f32ff774a8b57c5c5db6ee92, type: 2}

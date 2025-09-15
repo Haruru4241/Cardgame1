@@ -2,21 +2,12 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu(menuName = "CardGame/Actions/Highlight")]
-public class HighlightAction : CardAction
+public class HighlightAction : BaseAction
 {
     public bool highlight = true;
 
-    public override void Execute(CardInstance card, Processor processor)
+    public override void Execute(SignalBus Bus)
     {
-        card.BaseCard.transform.localScale = highlight ? Vector3.one * 1.1f : Vector3.one;
-    }
-
-    public override Func<object, object> GetFunction(Processor processor)
-    {
-        return _ =>
-        {
-            processor.Owner.BaseCard.transform.localScale = highlight ? Vector3.one * 1.1f : Vector3.one;
-            return null;
-        };
+        Bus.GetSourceCard().BaseCard.transform.localScale = highlight ? Vector3.one * 1.1f : Vector3.one;
     }
 }

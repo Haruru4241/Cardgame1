@@ -4,91 +4,60 @@ using System.Collections.Generic;
 using System.Linq;
 
 [CreateAssetMenu(menuName = "CardGame/Actions/DoubleNextEffectAction")]
-public class DoubleNextEffectAction : CardAction
+public class DoubleNextEffectAction : BaseAction
 {
-    [Tooltip("이 액션이 복제할 대상 신호")]
     public SignalType triggerSignal;
-
-    [Tooltip("인스펙터에 표시될 프로세서 이름")]
     public string processorName = "RepeatNextEffect";
-
-    [Tooltip("현재 효과 뒤에 몇 번 더 반복할지")]
     public int repeatCount = 2;
+    public int requiredCount = 1;
 
-    public override void Execute(CardInstance card, Processor processor)
+    public override void Execute(SignalBus Bus)
     {
-        GetFunction(processor)?.Invoke(null);
+        var candidates = DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList();
+        var selectState = GameManager.Instance.SelectState as SelectState;
+
+        selectState.StartSelection(
+            candidates,
+            Mathf.Min(requiredCount, candidates.Count),
+            list => OnSelectionFinished(list, Bus),
+            Bus // 🔹 현재 버스 전달
+        );
     }
-
-    public override Func<object, object> GetFunction(Processor processor)
+    private void OnSelectionFinished(List<BaseInstance> list, SignalBus Bus)
     {
-        return _ =>
+        var busesToPush = new List<SignalBus>();
+
+        foreach (var ci in list)
         {
-            // 선택 모드 진입: HandPile 기준으로 선택
-            var candidates = DeckManager.Instance.HandPile.Cards.ToList();
-            var selState = GameManager.Instance.SelectState as SelectState;
-            selState.StartSelection(candidates, 1, processor, list =>
+            // 선택된 카드(ci)의 프로세서 중 triggerSignal을 가진 것만 추출
+            var originals = ci._processors
+                .Where(p => p.GetActionsFor(triggerSignal).Any())
+                .ToList();
+
+            if (originals.Count == 0)
+                continue;
+
+            var bubbles = new List<ActionBubble>();
+
+            for (int i = 0; i < repeatCount; i++)
             {
-                var batch = new List<Processor>();
-                foreach (var ci in list)
+                foreach (var p in originals)
                 {
-                    // OnEffect 신호를 처리하는 프로세서 필터링
-                    var original = ci.processors
-                        .Where(p => p.GetHandlersFor(triggerSignal).Any())
-                        .ToList();
+                    // 🔹 한 번만 큐 생성
+                    var q = p.BuildActionQueue(triggerSignal);
 
-                    if (original.Count == 0)
-                        continue;
-
-                    // repeatCount만큼 복제하여 하나의 배치로 구성
-                    for (int i = 0; i < repeatCount; i++)
-                    {
-                        batch.AddRange(original);
-                    }
+                    bubbles.Add(new ActionBubble(q));
                 }
+            }
 
-                //ReactionStackManager.Instance.PushReactions(SignalType.OnEffect, batch);
+            // 🔹 카드별로 독립 Bus 생성
+            var bus = new SignalBus(triggerSignal, Bus);
+            bus.SetSourceInfo(ci);   // 실행 주체: 선택된 카드 b
+            bus.AddPassengers(bubbles);
 
-                var bus = new SignalBus(SignalType.OnEffect);
-
-                // 3) 걸러낸 프로세서 리스트를 버스에 태운다.
-                bus.AddPassengers(batch);
-
-                // 4) 최종적으로 ReactionStackManager에게 버스 전체를 전달
-                ReactionStackManager.Instance.PushBus(bus);
-            });
-
-            return null;
-            // 1) 빈 버스 생성
-
-
-            // // 선택 모드 진입: HandPile 기준으로 선택
-            // var candidates = DeckManager.Instance.HandPile.Cards.ToList();
-            // var selState = GameManager.Instance.SelectState as SelectState;
-            // selState.StartSelection(candidates, 1, processor, list =>
-            // {
-            //     var batch = new List<Processor>();
-            //     foreach (var ci in list)
-            //     {
-            //         // OnEffect 신호를 처리하는 프로세서 필터링
-            //         var original = ci.processors
-            //             .Where(p => p.GetHandlersFor(triggerSignal).Any())
-            //             .ToList();
-
-            //         if (original.Count == 0)
-            //             continue;
-
-            //         // repeatCount만큼 복제하여 하나의 배치로 구성
-            //         for (int i = 0; i < repeatCount; i++)
-            //         {
-            //             batch.AddRange(original);
-            //         }
-            //     }
-
-            //     ReactionStackManager.Instance.PushReactions(SignalType.OnEffect, batch);
-            // });
-
-            // return null;
-        };
+            busesToPush.Add(bus);
+        }
+        if (busesToPush.Count > 0)
+            ReactionStackManager.Instance.PushBuses(busesToPush);
     }
 }

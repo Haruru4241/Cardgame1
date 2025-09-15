@@ -11,6 +11,8 @@ public class MainInputState : GameStateBase
 
     public override void Enter()
     {
+        var dm = DeckManager.Instance;
+        dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
         // 카드 클릭/호버 이벤트 구독
         BaseCard.OnCardClicked += HandleCardClicked;
         BaseCard.OnCardHovered += HandleCardHovered;

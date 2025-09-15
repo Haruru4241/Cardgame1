@@ -12,25 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6461a93223f6e24479ec3295f0da7bff, type: 3}
   m_Name: card
   m_EditorClassIdentifier: 
-  cardID: 
-  cardName: p1
+  ID: 
+  Name: 5
+  Rarity: 0
+  Artwork: {fileID: 0}
+  Description: 55
+  FlavorText: 
+  Cost: 5
+  Tags: []
+  faction: 0
   cardType: 0
-  rarity: 0
-  artwork: {fileID: 0}
-  description: 
-  flavorText: 
-  cost: 4
   manaCost: 0
-  attack: 0
-  defense: 0
-  health: 0
-  moveRange: 0
-  attackRange: 0
-  speed: 0
+  attack: 5
+  defense: 5
+  health: 5
+  moveRange: 5
+  attackRange: 5
+  speed: 5
   targetType: 0
   activeSkills: []
-  faction: 0
-  tags: []
   onDrawActions:
   - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
   onSelectActions:
@@ -41,6 +41,7 @@ MonoBehaviour:
   onUseActions:
   - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
   onEffectActions:
+  - {fileID: 11400000, guid: 29a94c8a65da6ed4d980bed74e7f0817, type: 2}
   - {fileID: 11400000, guid: 6f87fb37a24876b4da21d559a2aa8eae, type: 2}
   onPlayedActions: []
   onDiscardActions: []

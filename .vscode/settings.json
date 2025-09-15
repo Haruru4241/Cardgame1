@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "CardGame.sln"
+    "dotnet.defaultSolution": "CardGame.sln",
+    "CodeGPT.apiKey": "OpenAI"
 }

@@ -565,7 +565,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7a42ebdd8a4a814b8a0092a7fd9b2a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsPerTurn: 6
 --- !u!114 &1647280953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,11 +604,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9857288c7295344b83dffe4b8a1085b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StartingArtifacts:
+  - {fileID: 11400000, guid: 704f8672e0e68d54998be8aef26d905b, type: 2}
   useCardKey: 13
   menuKey: 27
   cancelKey: 27
   endTurnKey: 32
   deckPreset: {fileID: 11400000, guid: 3b3c71f451b6edc489139da9b42321a8, type: 2}
+  _logs: 
 --- !u!114 &1647280957
 MonoBehaviour:
   m_ObjectHideFlags: 0

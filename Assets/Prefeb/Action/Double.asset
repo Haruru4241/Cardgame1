@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b304c10ab3aa1344927e3736c9ce573, type: 3}
   m_Name: Double
   m_EditorClassIdentifier: 
-  triggerSignal: 9
+  triggerSignal: 10
   processorName: RepeatNextEffect
-  repeatCount: 3
+  repeatCount: 2
+  requiredCount: 1

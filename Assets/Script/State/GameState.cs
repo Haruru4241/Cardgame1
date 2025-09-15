@@ -36,7 +36,7 @@ public abstract class GameStateBase
         for (int i = 1; i <= 8; i++)
             if (Input.GetKeyDown(i.ToString()))
             {
-                var pileCards = DeckManager.Instance.HandPile.Cards;
+                var pileCards = DeckManager.Instance.GetPile(PileType.Hand).Cards;
                 if (i - 1 < pileCards.Count)
                     OnCardClicked(pileCards[i - 1].BaseCard);
             }
@@ -52,13 +52,13 @@ public abstract class GameStateBase
         {
             DeselectAll();
             selected.Add(card);
-            card.cardInstance.Fire(SignalType.OnSelect);
+            card.cardInstance.Fire(new SignalBus(SignalType.OnSelect));
         }
     }
     public void DeselectAll()
     {
         foreach (var c in selected)
-            c.cardInstance.Fire(SignalType.OnUnSelect);
+            c.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
         selected.Clear();
         _confirmed.Clear();
     }
@@ -73,7 +73,7 @@ public abstract class GameStateBase
     {
         DeselectAll();
         selected.Add(bc);
-        bc.cardInstance.Fire(SignalType.OnSelect);
+        bc.cardInstance.Fire(new SignalBus(SignalType.OnSelect));
     }
 
     protected virtual void HandleCardUnhovered(BaseCard bc)
@@ -81,7 +81,7 @@ public abstract class GameStateBase
         if (selected.Contains(bc))  // **변경**: 즉시 사용 모드거나 이미 선택된 카드라면
         {
             selected.Remove(bc);
-            bc.cardInstance.Fire(SignalType.OnUnSelect);                           // **변경**: 선택 해제
+            bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));                           // **변경**: 선택 해제
         }
     }
     protected virtual void UseSelectedCards()

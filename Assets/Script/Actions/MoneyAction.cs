@@ -2,24 +2,15 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu(menuName = "CardGame/Actions/MoneyAction")]
-public class MoneyAction : CardAction
+public class MoneyAction : BaseAction
 {
     public enum MoneyOp { Add, Subtract, Set }
     public MoneyOp operation = MoneyOp.Add;
     public int amount = 1;
 
-    public override void Execute(CardInstance card, Processor processor)
+    public override void Execute(SignalBus Bus)
     {
         Apply();
-    }
-
-    public override Func<object, object> GetFunction(Processor processor)
-    {
-        return _ =>
-        {
-            Apply();
-            return null;
-        };
     }
 
     private void Apply()

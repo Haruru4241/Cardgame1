@@ -16,7 +16,7 @@ MonoBehaviour:
   entries:
   - signal: 2
     actions:
-    - {fileID: 11400000, guid: 91dadfddd4081b441b6e27eff20b9f2c, type: 2}
+    - {fileID: 11400000, guid: 21de020516a5cb24f8145c7f756466e8, type: 2}
   - signal: 5
     actions:
     - {fileID: 11400000, guid: e1f542a913b4f94499aaf4fc9028c040, type: 2}

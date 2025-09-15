@@ -2,47 +2,45 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu(menuName = "CardGame/Actions/MoveToPile")]
-public class MoveToPileAction : CardAction
+public class MoveToPileAction : BaseAction
 {
-    public enum TargetPileType { Used, Discard, Exhaust, Deck, Hand, Destroy}
-    public TargetPileType targetPile;
+    // ✅ 전역 PileType 재사용 (중복 enum 제거)
+    public PileType targetPile;
 
-    public override void Execute(CardInstance card, Processor processor)
+    public override void Execute(SignalBus Bus)
     {
-        Apply(card);
+        Apply(Bus.GetSourceCard());
     }
 
-    public override Func<object, object> GetFunction(Processor processor)
+    private void Apply(BaseInstance card)
     {
-        return _ =>
+        if (card == null) return;
+
+        var dm = DeckManager.Instance;
+        if (dm == null) return;
+
+        // ✅ 새 구조: 타입으로 목적지 Pile 검색
+        var toPile = dm.GetPile(targetPile);
+        if (toPile == null)
         {
-            Apply(processor.Owner);
-            return null;
-        };
-    }
-
-    private void Apply(CardInstance card)
-    {
-        DeckManager dm = DeckManager.Instance;
-
-        // 현재 파일에서 제거
-        card.CurrentPile?.Remove(card);
-
-        // 목적지 파일로 이동
-        Pile toPile = null;
-        switch (targetPile)
-        {
-            case TargetPileType.Used: toPile = dm.UsedPile; break;
-            case TargetPileType.Discard: toPile = dm.DiscardPile; break;
-            case TargetPileType.Exhaust: toPile = dm.ExhaustPile; break;
-            case TargetPileType.Deck: toPile = dm.DeckPile; break;
-            case TargetPileType.Hand: toPile = dm.HandPile; break;
-            case TargetPileType.Destroy: toPile = dm.DestroyPile; break;
+            Debug.LogWarning($"[MoveToPile] 대상 Pile({targetPile})이 활성화/생성되지 않았습니다.");
+            return;
         }
 
-        toPile?.Add(card);
+        // ✅ 같은 곳이면 작업 불필요
+        if (card.CurrentZone == toPile)
+        {
+            return;
+        }
 
-        // UI 갱신
-        dm.ReloadHandUI();
+        // 현재 파일에서 제거 (안전 가드)
+        card.CurrentZone?.Remove(card);
+
+        // 목적지 파일로 이동
+        toPile.Add(card);
+
+        // UI 갱신 (핸드 변화에만 의존해도 되지만, 일단 안전하게 호출)
+        //dm.ReloadHandUI();
+        dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
     }
 }

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6461a93223f6e24479ec3295f0da7bff, type: 3}
+  m_Name: card 3
+  m_EditorClassIdentifier: 
+  ID: 
+  Name: 13
+  Rarity: 0
+  Artwork: {fileID: 0}
+  Description: 13
+  FlavorText: 
+  Cost: 13
+  Tags: []
+  faction: 0
+  cardType: 0
+  manaCost: 0
+  attack: 13
+  defense: 3
+  health: 13
+  moveRange: 13
+  attackRange: 13
+  speed: 3
+  targetType: 0
+  activeSkills: []
+  onDrawActions:
+  - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
+  onSelectActions:
+  - {fileID: 11400000, guid: f8d9bcb8e31aa0843a311bd2b8ea34cb, type: 2}
+  onUnSelectActions:
+  - {fileID: 11400000, guid: e48f7bce49137144a89baf8f371cb177, type: 2}
+  onRequirementActions: []
+  onUseActions:
+  - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
+  onEffectActions:
+  - {fileID: 11400000, guid: 6f87fb37a24876b4da21d559a2aa8eae, type: 2}
+  onPlayedActions: []
+  onDiscardActions: []
+  onExhaustActions: []
+  onDestroyActions:
+  - {fileID: 11400000, guid: 13fa0338759436a4999689a456fa4ca6, type: 2}
