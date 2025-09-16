@@ -38,11 +38,11 @@ public class ValueAction : BaseAction
         {
             switch (valueType)
             {
-                case ValueType.Int:    return intValue;
-                case ValueType.Float:  return floatValue;
+                case ValueType.Int: return intValue;
+                case ValueType.Float: return floatValue;
                 case ValueType.String: return stringValue;
-                case ValueType.Bool:   return boolValue;
-                default:               return null;
+                case ValueType.Bool: return boolValue;
+                default: return null;
             }
         }
     }
@@ -84,7 +84,7 @@ public class ValueAction : BaseAction
                 Debug.LogWarning($"ValueAction.Initialize: 지원하지 않는 타입({value.GetType()})의 값이 전달되었습니다.");
             }
         }
-        
+
         return this;
     }
 
@@ -93,10 +93,16 @@ public class ValueAction : BaseAction
     /// </summary>
     public override void Execute(SignalBus bus)
     {
-        if (bus == null) return;
+        if (bus == null ||GetValue(bus)!= null) return;
         GameManager.Instance._logs += $"밸류 {Value}, {op} ";
         // Value 프로퍼티를 통해 현재 타입에 맞는 값을 전달합니다.
-        bus.Calc(op, Value);
-        
+        bus.Calc(op, GetValue(bus));
+
+    }
+    
+    
+    public virtual object GetValue(SignalBus bus)
+    {
+        return Value;
     }
 }

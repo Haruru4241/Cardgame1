@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Presets;
 
 /// <summary>
 /// 룰 전용 런타임 인스턴스.
@@ -15,8 +16,10 @@ public class RuleInstance : BaseInstance
     // 신호별로 룰 액션을 직접 추가할 수 있게 (턴 시작/종료 같은 고정 룰)
     private readonly Dictionary<SignalType, List<BaseAction>> extraActions = new();
 
-    public RuleInstance()
+    public RuleInstance(GamePreset preset)
     {
+        RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
+        RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
     }
 
 

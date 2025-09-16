@@ -47,65 +47,141 @@ public class DeckManager : MonoBehaviour
     public bool TryGetPile(PileType type, out Pile pile) => _byType.TryGetValue(type, out pile);
 
     // ----------------- 기존 기능들: 타입 검색 기반으로 동작 -----------------
-
     public void SetupGame(GamePreset preset)
+{
+    if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
+
+    var deck = GetPile(PileType.Deck);
+    var discard = GetPile(PileType.Discard);
+    var exhaust = GetPile(PileType.Exhaust);
+    var hand = GetPile(PileType.Hand);
+    var used = GetPile(PileType.Used);
+    var rulePile = GetPile(PileType.Rule);
+
+    if (deck == null || hand == null || discard == null)
     {
-        if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
-
-        var deck = GetPile(PileType.Deck);
-        var discard = GetPile(PileType.Discard);
-        var exhaust = GetPile(PileType.Exhaust);
-        var hand = GetPile(PileType.Hand);
-        var used = GetPile(PileType.Used);
-        var rulePile = GetPile(PileType.Rule);
-
-        if (deck == null || hand == null || discard == null)
-        {
-            Debug.LogError("필수 Pile(Deck/Hand/Discard) 누락");
-            return;
-        }
-
-        deck.Cards.Clear();
-        discard.Cards.Clear();
-        if (exhaust != null) exhaust.Cards.Clear();
-        hand.Cards.Clear();
-        if (used != null) used.Cards.Clear();
-        AllInstances.Clear();
-
-        var temp = new List<CardInstance>();
-        foreach (var entry in preset.cardEntries)
-        {
-            for (int i = 0; i < entry.count; i++)
-            {
-                var ci = new CardInstance(entry.cardData);
-                temp.Add(ci);
-                AllInstances.Add(ci);
-            }
-        }
-        while (temp.Count > 0)
-        {
-            int idx = UnityEngine.Random.Range(0, temp.Count);
-            var ci = temp[idx];
-            var obj = Object.Instantiate(cardPrefab, dumpArea);
-            var bc = obj.GetComponent<BaseCard>();
-            ci.BaseCard = bc;
-            bc.Setup((CardData)ci.BaseData, ci);
-            obj.SetActive(false);
-
-            temp.RemoveAt(idx);
-            deck.Add(ci);
-        }
-        // 1) RuleInstance 단일 생성
-        var ruleInst = new RuleInstance();
-        ruleInst.RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
-        ruleInst.RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
-
-        // 3) RuleInstance를 런타임 리스트와 Rule Pile에 등록
-        AllInstances.Add(ruleInst);
-        rulePile.Add(ruleInst);
-
-        UpdateAllCardUIs();
+        Debug.LogError("필수 Pile(Deck/Hand/Discard) 누락");
+        return;
     }
+
+    // 초기화
+    deck.Cards.Clear();
+    discard.Cards.Clear();
+    if (exhaust != null) exhaust.Cards.Clear();
+    hand.Cards.Clear();
+    if (used != null) used.Cards.Clear();
+    AllInstances.Clear();
+
+    // 덱 카드 생성
+    var temp = new List<CardInstance>();
+    foreach (var entry in preset.cardEntries)
+    {
+        for (int i = 0; i < entry.count; i++)
+        {
+            var ci = CreateInstanceFromData(entry.cardData, dumpArea, false);
+            temp.Add(ci);
+        }
+    }
+
+    // 랜덤 셔플 + 덱에 넣기
+    while (temp.Count > 0)
+    {
+        int idx = UnityEngine.Random.Range(0, temp.Count);
+        var ci = temp[idx];
+        temp.RemoveAt(idx);
+        deck.Add(ci);
+    }
+
+    // 룰 인스턴스
+    var ruleInst = new RuleInstance(preset);
+    //ruleInst.RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
+    //ruleInst.RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
+    AllInstances.Add(ruleInst);
+    rulePile.Add(ruleInst);
+
+    UpdateAllCardUIs();
+}
+
+    // public void SetupGame(GamePreset preset)
+    // {
+    //     if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
+
+    //     var deck = GetPile(PileType.Deck);
+    //     var discard = GetPile(PileType.Discard);
+    //     var exhaust = GetPile(PileType.Exhaust);
+    //     var hand = GetPile(PileType.Hand);
+    //     var used = GetPile(PileType.Used);
+    //     var rulePile = GetPile(PileType.Rule);
+
+    //     if (deck == null || hand == null || discard == null)
+    //     {
+    //         Debug.LogError("필수 Pile(Deck/Hand/Discard) 누락");
+    //         return;
+    //     }
+
+    //     deck.Cards.Clear();
+    //     discard.Cards.Clear();
+    //     if (exhaust != null) exhaust.Cards.Clear();
+    //     hand.Cards.Clear();
+    //     if (used != null) used.Cards.Clear();
+    //     AllInstances.Clear();
+
+    //     var temp = new List<CardInstance>();
+    //     foreach (var entry in preset.cardEntries)
+    //     {
+    //         for (int i = 0; i < entry.count; i++)
+    //         {
+    //             var ci = new CardInstance(entry.cardData);
+    //             temp.Add(ci);
+    //             AllInstances.Add(ci);
+    //         }
+    //     }
+    //     while (temp.Count > 0)
+    //     {
+    //         int idx = UnityEngine.Random.Range(0, temp.Count);
+    //         var ci = temp[idx];
+    //         var obj = Object.Instantiate(cardPrefab, dumpArea);
+    //         var bc = obj.GetComponent<BaseCard>();
+    //         ci.BaseCard = bc;
+    //         bc.Setup((CardData)ci.BaseData, ci);
+    //         obj.SetActive(false);
+
+    //         temp.RemoveAt(idx);
+    //         deck.Add(ci);
+    //     }
+    //     // 1) RuleInstance 단일 생성
+    //     var ruleInst = new RuleInstance();
+    //     ruleInst.RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
+    //     ruleInst.RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
+
+    //     // 3) RuleInstance를 런타임 리스트와 Rule Pile에 등록
+    //     AllInstances.Add(ruleInst);
+    //     rulePile.Add(ruleInst);
+
+    //     UpdateAllCardUIs();
+    // }
+    public CardInstance CreateInstanceFromData(CardData data, Transform parent = null, bool active = false)
+    {
+        if (data == null)
+        {
+            Debug.LogError("CardData가 null입니다.");
+            return null;
+        }
+
+        var ci = new CardInstance(data);
+        AllInstances.Add(ci);
+
+        // UI 프리팹 생성
+        var obj = Object.Instantiate(cardPrefab, parent ?? dumpArea);
+        var bc = obj.GetComponent<BaseCard>();
+
+        ci.BaseCard = bc;
+        bc.Setup(data, ci);
+        obj.SetActive(active);
+
+        return ci;
+    }
+
 
     public BaseInstance DrawOne()
     {

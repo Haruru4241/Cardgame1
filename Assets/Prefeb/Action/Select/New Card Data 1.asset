@@ -10,39 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6461a93223f6e24479ec3295f0da7bff, type: 3}
-  m_Name: card 2
+  m_Name: New Card Data 1
   m_EditorClassIdentifier: 
   ID: 
-  Name: 33
+  Name: 12
   Rarity: 0
   Artwork: {fileID: 0}
-  Description: 3
+  Description: 
   FlavorText: 
-  Cost: 3
+  Cost: 0
   Tags: []
   faction: 0
   cardType: 0
   manaCost: 0
-  attack: 3
-  defense: 3
-  health: 3
-  moveRange: 3
-  attackRange: 3
-  speed: 3
+  attack: 0
+  defense: 0
+  health: 0
+  moveRange: 0
+  attackRange: 0
+  speed: 0
   targetType: 0
   activeSkills: []
-  onDrawActions:
-  - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
-  onSelectActions:
-  - {fileID: 11400000, guid: f8d9bcb8e31aa0843a311bd2b8ea34cb, type: 2}
-  onUnSelectActions:
-  - {fileID: 11400000, guid: e48f7bce49137144a89baf8f371cb177, type: 2}
+  onDrawActions: []
+  onSelectActions: []
+  onUnSelectActions: []
   onRequirementActions: []
-  onUseActions:
-  - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
+  onUseActions: []
   onEffectActions:
-  - {fileID: 11400000, guid: 1660e14f677932c44966e0dc33c34879, type: 2}
-  - {fileID: 11400000, guid: 2b3ac41073dbf43489ce47c27c9b5892, type: 2}
+  - {fileID: 11400000, guid: 1651743919474c14c8f713866d649ef0, type: 2}
   onPlayedActions: []
   onDiscardActions: []
   onExhaustActions: []
