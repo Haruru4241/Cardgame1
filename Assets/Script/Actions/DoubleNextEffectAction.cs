@@ -17,8 +17,8 @@ public class DoubleNextEffectAction : BaseAction
         var selectState = GameManager.Instance.SelectState as SelectState;
 
         selectState.StartSelection(
-            candidates,
-            Mathf.Min(requiredCount, candidates.Count),
+            ()=>DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList(),
+            requiredCount,
             list => OnSelectionFinished(list, Bus),
             Bus // 🔹 현재 버스 전달
         );
@@ -29,35 +29,14 @@ public class DoubleNextEffectAction : BaseAction
 
         foreach (var ci in list)
         {
-            // 선택된 카드(ci)의 프로세서 중 triggerSignal을 가진 것만 추출
-            var originals = ci._processors
-                .Where(p => p.GetActionsFor(triggerSignal).Any())
-                .ToList();
-
-            if (originals.Count == 0)
-                continue;
-
-            var bubbles = new List<ActionBubble>();
-
             for (int i = 0; i < repeatCount; i++)
             {
-                foreach (var p in originals)
-                {
-                    // 🔹 한 번만 큐 생성
-                    var q = p.BuildActionQueue(triggerSignal);
-
-                    bubbles.Add(new ActionBubble(q));
-                }
+                busesToPush.Add(ci.PrepareBus(new SignalBus(triggerSignal, Bus)));
             }
-
-            // 🔹 카드별로 독립 Bus 생성
-            var bus = new SignalBus(triggerSignal, Bus);
-            bus.SetSourceInfo(ci);   // 실행 주체: 선택된 카드 b
-            bus.AddPassengers(bubbles);
-
-            busesToPush.Add(bus);
         }
+
+        // 3. 모든 준비가 끝난 후, 한 번에 출발시킵니다.
         if (busesToPush.Count > 0)
-            ReactionStackManager.Instance.PushBuses(busesToPush);
+            ReactionStackManager.Instance.PushBuses(busesToPush); // PushSequence 사용 권장
     }
 }

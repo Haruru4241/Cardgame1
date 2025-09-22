@@ -21,6 +21,35 @@ MonoBehaviour:
   Cost: 5
   Tags: []
   faction: 0
+  actionEntries:
+  - signal: 12
+    actions:
+    - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
+  - signal: 8
+    actions:
+    - {fileID: 11400000, guid: f8d9bcb8e31aa0843a311bd2b8ea34cb, type: 2}
+  - signal: 9
+    actions:
+    - {fileID: 11400000, guid: e48f7bce49137144a89baf8f371cb177, type: 2}
+  - signal: 14
+    actions: []
+  - signal: 7
+    actions:
+    - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
+  - signal: 10
+    actions:
+    - {fileID: 11400000, guid: 29a94c8a65da6ed4d980bed74e7f0817, type: 2}
+    - {fileID: 11400000, guid: 6f87fb37a24876b4da21d559a2aa8eae, type: 2}
+  - signal: 11
+    actions: []
+  - signal: 18
+    actions:
+    - {fileID: 11400000, guid: 13fa0338759436a4999689a456fa4ca6, type: 2}
+  - signal: 16
+    actions: []
+  - signal: 17
+    actions:
+    - {fileID: 11400000, guid: 13fa0338759436a4999689a456fa4ca6, type: 2}
   cardType: 0
   manaCost: 0
   attack: 5
@@ -30,7 +59,13 @@ MonoBehaviour:
   attackRange: 5
   speed: 5
   targetType: 0
-  activeSkills: []
+  activeSkills:
+  - skillName: 
+    skillDescription: 
+  - skillName: 
+    skillDescription: 
+  - skillName: 
+    skillDescription: 
   onDrawActions:
   - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
   onSelectActions:

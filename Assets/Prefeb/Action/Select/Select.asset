@@ -15,4 +15,6 @@ MonoBehaviour:
   candidateData:
   - {fileID: 11400000, guid: 5d47ce47240c35340a2aab331600c11a, type: 2}
   - {fileID: 11400000, guid: 04712768797ff124eb8b8ab8f25e9c3a, type: 2}
+  - {fileID: 11400000, guid: 04712768797ff124eb8b8ab8f25e9c3a, type: 2}
+  - {fileID: 11400000, guid: 04712768797ff124eb8b8ab8f25e9c3a, type: 2}
   requiredCount: 1

@@ -46,24 +46,24 @@ public class CardInstance : BaseInstance
         //     data.Artwork,         // Sprite (UnityEngine.Object)
         //     CalcOp.Set));
 
-
-        RegisterProcessor(SignalType.OnDraw, data.onDrawActions);
-        RegisterProcessor(SignalType.OnSelect, data.onSelectActions);
-        RegisterProcessor(SignalType.OnUnSelect, data.onUnSelectActions);
-        RegisterProcessor(SignalType.OnRequirement, data.onRequirementActions);
-        RegisterProcessor(SignalType.OnUse, data.onUseActions);
-        RegisterProcessor(SignalType.OnEffect, data.onEffectActions);
-        RegisterProcessor(SignalType.OnPlayed, data.onPlayedActions);
-        RegisterProcessor(SignalType.OnDiscard, data.onDiscardActions);
-        RegisterProcessor(SignalType.OnExhaust, data.onExhaustActions);
-        RegisterProcessor(SignalType.OnDestroy, data.onDestroyActions);
+        foreach (var entry in data.actionEntries)
+        {
+            // 엔트리에 액션이 하나라도 있을 경우에만 등록
+            if (entry.actions != null && entry.actions.Count > 0)
+            {
+                RegisterProcessor(entry.signal, entry.actions);
+            }
+        }
     }
 
     public override void Fire(SignalBus bus)
     {
+        var Bubbles = BuildBubblesForSignal(bus);
         // 버스에 탑승시키고 처리 시작
-        bus.AddPassengers(BuildBubblesForSignal(bus));
+        if (Bubbles.Count == 0) return;
+        bus.AddPassengers(Bubbles);
         bus.SetSourceInfo(this);
+        GameManager.Instance._logs += $"fire {bus.Signal}{bus._bubbles.Count} ";
         ReactionStackManager.Instance.PushBus(bus);
     }
 }

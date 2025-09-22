@@ -4,6 +4,7 @@ using System.Collections.Generic;
 // Deck/Hand/Discard... 등은 PileType으로만 구분한다(이름 하드코딩 X).
 public class Pile : Zone
 {
+    public SignalType PileSignal { get; private set; }
     public PileType Type { get; private set; }
 
     // 기존 코드 호환을 위해 Cards 프로퍼티 제공(내부 리스트 그대로 노출)
@@ -12,6 +13,12 @@ public class Pile : Zone
     public Pile(PileType type) : base(type.ToString())
     {
         Type = type;
+        // Name은 type.ToString()으로 자동 설정(원하면 로컬라이즈/표기 바꿔도 됨)
+    }
+    public Pile(PileType type, SignalType signal) : base(type.ToString())
+    {
+        Type = type;
+        PileSignal = signal;
         // Name은 type.ToString()으로 자동 설정(원하면 로컬라이즈/표기 바꿔도 됨)
     }
 

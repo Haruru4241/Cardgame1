@@ -8,6 +8,7 @@ public class TargetSelector : ScriptableObject
     [Header("기본 옵션")]
     [Tooltip("자기 자신 제외")]
     public bool excludeSelf = true;
+    public bool selectSelfOnly = false;
 
     [Tooltip("같은 CardData만 허용")]
     public bool matchSameData = false;
@@ -17,6 +18,8 @@ public class TargetSelector : ScriptableObject
 
     [Tooltip("같은 팩션만 허용")]
     public bool matchSameFaction = false;
+    [Tooltip("특정 파일 타입만 허용")]
+    public PileType zone = PileType.None;
 
     [Header("특정 카드 데이터 필터")]
     [Tooltip("이 리스트에 포함된 CardData만 허용 (비어 있으면 무시)")]
@@ -41,7 +44,6 @@ public class TargetSelector : ScriptableObject
     /// </summary>
     public List<BaseInstance> GetTargets(BaseInstance origin)
     {
-
         // 1) 초기 후보: AllCardInstances + manualTargets
         var all = DeckManager.Instance.AllInstances;
         IEnumerable<BaseInstance> candidates = all;
@@ -53,10 +55,18 @@ public class TargetSelector : ScriptableObject
         {
             candidates = manualTargets;
         }
+        if (zone != PileType.None)
+        {
+            candidates = candidates.Where(c =>
+                c.CurrentZone is Pile currentPile && (zone & currentPile.Type) != 0
+            );
+        }
 
         // 3) excludeSelf
         if (excludeSelf)
             candidates = candidates.Where(c => c != origin);
+        else if (selectSelfOnly)
+            candidates = candidates.Where(c => c == origin);
 
         // 4) matchSameData
         if (matchSameData)
@@ -64,11 +74,7 @@ public class TargetSelector : ScriptableObject
 
         // 5) matchSameName
         if (matchSameName)
-            candidates = candidates.Where(c =>
-    {
-        DebugCheck(origin, c); // ★ 의심 구간 검사 로그
-        return string.Equals(c?.BaseData?.Name, origin?.BaseData?.Name);
-    });
+            candidates = candidates.Where(c => string.Equals(c?.BaseData?.Name, origin?.BaseData?.Name));
 
         // 6) matchSameFaction
         if (matchSameFaction)

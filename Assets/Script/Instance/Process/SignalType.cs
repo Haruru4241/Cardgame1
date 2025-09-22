@@ -16,9 +16,17 @@ public enum SignalType
     OnDraw,
     OnDrawDriver,
     OnRequirement,
+    OnMoneyCount,
     OnDiscard,
     OnExhaust,
     OnDestroy,
     DrawCount,
+    OnDeckPileChanged,
+    OnHandPileChanged,
+    OnDestoryPileChanged,
+    OnDiscardPileChanged,
+    OnExhaustPileChanged,
+    OnUsedPileChanged,
+    OnRulePileChanged,
     // ...다른 신호들 추가 가능
 }

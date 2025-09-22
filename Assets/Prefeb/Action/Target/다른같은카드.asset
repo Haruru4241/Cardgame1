@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: "\uB2E4\uB978\uAC19\uC740\uCE74\uB4DC"
   m_EditorClassIdentifier: 
   excludeSelf: 0
+  selectSelfOnly: 0
   matchSameData: 0
   matchSameName: 1
   matchSameFaction: 0
+  zone: 0
   allowCardDatas: []
   useCostRange: 0
   minCost: 0

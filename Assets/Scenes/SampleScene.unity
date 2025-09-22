@@ -627,6 +627,21 @@ MonoBehaviour:
   cardPrefab: {fileID: 6062244652577276555, guid: b8558c16bd0a666419475bb67757fe95, type: 3}
   handArea: {fileID: 1401548629}
   dumpArea: {fileID: 852002162}
+  pileSignalEntries:
+  - pileType: 1
+    changeSignal: 26
+  - pileType: 2
+    changeSignal: 20
+  - pileType: 4
+    changeSignal: 23
+  - pileType: 8
+    changeSignal: 24
+  - pileType: 16
+    changeSignal: 21
+  - pileType: 32
+    changeSignal: 22
+  - pileType: 64
+    changeSignal: 25
 --- !u!4 &1647280958
 Transform:
   m_ObjectHideFlags: 0

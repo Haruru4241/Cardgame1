@@ -21,25 +21,35 @@ public class DeckManager : MonoBehaviour
     public Transform handArea;
     public Transform dumpArea;
 
+
+    [System.Serializable]
+    public class PileSignalEntry
+    {
+        public PileType pileType;
+        public SignalType changeSignal;
+    }
+    [Header("파일-신호 설정")]
+    [Tooltip("게임에서 사용할 파일들과 각 파일이 변경될 때 방송할 신호를 여기에 등록합니다.")]
+    public List<PileSignalEntry> pileSignalEntries = new List<PileSignalEntry>();
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
-
-        BuildAllPiles();
     }
-
-    // PileType enum을 순회해 전부 생성 (이름 하드코딩/일일이 new 없음)
+    // 수정된 파일 생성 메소드
     private void BuildAllPiles()
     {
         _piles.Clear();
         _byType.Clear();
 
-        foreach (PileType t in System.Enum.GetValues(typeof(PileType)))
+        // Enum을 순회하는 대신, 인스펙터에 등록된 엔트리 리스트를 순회합니다.
+        foreach (var entry in pileSignalEntries)
         {
-            var pile = new Pile(t);
+            // 각 엔트리의 정보(파일 타입, 신호 타입)를 사용하여 파일을 생성합니다.
+            var pile = new Pile(entry.pileType, entry.changeSignal);
             _piles.Add(pile);
-            _byType[t] = pile;
+            _byType[entry.pileType] = pile;
         }
     }
 
@@ -48,118 +58,61 @@ public class DeckManager : MonoBehaviour
 
     // ----------------- 기존 기능들: 타입 검색 기반으로 동작 -----------------
     public void SetupGame(GamePreset preset)
-{
-    if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
-
-    var deck = GetPile(PileType.Deck);
-    var discard = GetPile(PileType.Discard);
-    var exhaust = GetPile(PileType.Exhaust);
-    var hand = GetPile(PileType.Hand);
-    var used = GetPile(PileType.Used);
-    var rulePile = GetPile(PileType.Rule);
-
-    if (deck == null || hand == null || discard == null)
     {
-        Debug.LogError("필수 Pile(Deck/Hand/Discard) 누락");
-        return;
-    }
+        BuildAllPiles();
 
-    // 초기화
-    deck.Cards.Clear();
-    discard.Cards.Clear();
-    if (exhaust != null) exhaust.Cards.Clear();
-    hand.Cards.Clear();
-    if (used != null) used.Cards.Clear();
-    AllInstances.Clear();
+        if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
 
-    // 덱 카드 생성
-    var temp = new List<CardInstance>();
-    foreach (var entry in preset.cardEntries)
-    {
-        for (int i = 0; i < entry.count; i++)
+        var deck = GetPile(PileType.Deck);
+        var discard = GetPile(PileType.Discard);
+        var exhaust = GetPile(PileType.Exhaust);
+        var hand = GetPile(PileType.Hand);
+        var used = GetPile(PileType.Used);
+        var rulePile = GetPile(PileType.Rule);
+
+        if (deck == null || hand == null || discard == null)
         {
-            var ci = CreateInstanceFromData(entry.cardData, dumpArea, false);
-            temp.Add(ci);
+            Debug.LogError("필수 Pile(Deck/Hand/Discard) 누락");
+            return;
         }
+
+        // 초기화
+        deck.Cards.Clear();
+        discard.Cards.Clear();
+        if (exhaust != null) exhaust.Cards.Clear();
+        hand.Cards.Clear();
+        if (used != null) used.Cards.Clear();
+        AllInstances.Clear();
+
+        // 덱 카드 생성
+        var temp = new List<CardInstance>();
+        foreach (var entry in preset.cardEntries)
+        {
+            for (int i = 0; i < entry.count; i++)
+            {
+                var ci = CreateInstanceFromData(entry.cardData, dumpArea, false);
+                temp.Add(ci);
+            }
+        }
+
+        // 랜덤 셔플 + 덱에 넣기
+        while (temp.Count > 0)
+        {
+            int idx = UnityEngine.Random.Range(0, temp.Count);
+            var ci = temp[idx];
+            temp.RemoveAt(idx);
+            deck.Add(ci);
+        }
+
+        // 룰 인스턴스
+        var ruleInst = new RuleInstance(preset);
+        AllInstances.Add(ruleInst);
+        rulePile.Add(ruleInst);
+
+        //UpdateAllCardUIs();
+        ReloadCustomUI(GetPile(PileType.Hand).Cards);
     }
 
-    // 랜덤 셔플 + 덱에 넣기
-    while (temp.Count > 0)
-    {
-        int idx = UnityEngine.Random.Range(0, temp.Count);
-        var ci = temp[idx];
-        temp.RemoveAt(idx);
-        deck.Add(ci);
-    }
-
-    // 룰 인스턴스
-    var ruleInst = new RuleInstance(preset);
-    //ruleInst.RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
-    //ruleInst.RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
-    AllInstances.Add(ruleInst);
-    rulePile.Add(ruleInst);
-
-    UpdateAllCardUIs();
-}
-
-    // public void SetupGame(GamePreset preset)
-    // {
-    //     if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
-
-    //     var deck = GetPile(PileType.Deck);
-    //     var discard = GetPile(PileType.Discard);
-    //     var exhaust = GetPile(PileType.Exhaust);
-    //     var hand = GetPile(PileType.Hand);
-    //     var used = GetPile(PileType.Used);
-    //     var rulePile = GetPile(PileType.Rule);
-
-    //     if (deck == null || hand == null || discard == null)
-    //     {
-    //         Debug.LogError("필수 Pile(Deck/Hand/Discard) 누락");
-    //         return;
-    //     }
-
-    //     deck.Cards.Clear();
-    //     discard.Cards.Clear();
-    //     if (exhaust != null) exhaust.Cards.Clear();
-    //     hand.Cards.Clear();
-    //     if (used != null) used.Cards.Clear();
-    //     AllInstances.Clear();
-
-    //     var temp = new List<CardInstance>();
-    //     foreach (var entry in preset.cardEntries)
-    //     {
-    //         for (int i = 0; i < entry.count; i++)
-    //         {
-    //             var ci = new CardInstance(entry.cardData);
-    //             temp.Add(ci);
-    //             AllInstances.Add(ci);
-    //         }
-    //     }
-    //     while (temp.Count > 0)
-    //     {
-    //         int idx = UnityEngine.Random.Range(0, temp.Count);
-    //         var ci = temp[idx];
-    //         var obj = Object.Instantiate(cardPrefab, dumpArea);
-    //         var bc = obj.GetComponent<BaseCard>();
-    //         ci.BaseCard = bc;
-    //         bc.Setup((CardData)ci.BaseData, ci);
-    //         obj.SetActive(false);
-
-    //         temp.RemoveAt(idx);
-    //         deck.Add(ci);
-    //     }
-    //     // 1) RuleInstance 단일 생성
-    //     var ruleInst = new RuleInstance();
-    //     ruleInst.RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
-    //     ruleInst.RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
-
-    //     // 3) RuleInstance를 런타임 리스트와 Rule Pile에 등록
-    //     AllInstances.Add(ruleInst);
-    //     rulePile.Add(ruleInst);
-
-    //     UpdateAllCardUIs();
-    // }
     public CardInstance CreateInstanceFromData(CardData data, Transform parent = null, bool active = false)
     {
         if (data == null)
@@ -238,55 +191,6 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public void ReloadHandUI()
-    {
-        var hand = GetPile(PileType.Hand);
-        if (hand == null) return;
-
-        // 1. 현재 handArea의 카드UI 목록 만들기
-        List<BaseCard> uiCards = new List<BaseCard>();
-        foreach (Transform child in handArea)
-            if (child.gameObject.activeSelf)
-                uiCards.Add(child.GetComponent<BaseCard>());
-
-        // 2. handArea에 남아 있지만 HandPile.Cards에 없는 카드 → dumpArea로 이동
-        foreach (var uiCard in uiCards)
-        {
-            bool exists = false;
-            foreach (var ci in hand.Cards)
-            {
-                if (ci.BaseCard == uiCard)
-                {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists)
-            {
-                uiCard.transform.SetParent(dumpArea);
-                uiCard.gameObject.SetActive(false);
-            }
-        }
-
-        // 3. HandPile.Cards 순서대로 handArea에 맞게 추가/이동
-        for (int i = 0; i < hand.Cards.Count; i++)
-        {
-            var ci = hand.Cards[i];
-            BaseCard bc = ci.BaseCard;
-            if (bc == null) continue;
-
-            if (bc.transform.parent != handArea)
-            {
-                bc.transform.SetParent(handArea);
-                bc.gameObject.SetActive(true);
-            }
-            if (bc.transform.GetSiblingIndex() != i)
-            {
-                bc.transform.SetSiblingIndex(i);
-            }
-        }
-    }
-
     public void MigratePileCards(List<BaseInstance> cards, Pile toPile, bool shuffle = false)
     {
         if (toPile == null) return;
@@ -299,16 +203,57 @@ public class DeckManager : MonoBehaviour
         if (shuffle) toPile.Shuffle();
     }
 
+    // public void BroadcastSignalToAllPiles(SignalType signal)
+    // {
+    //     var pilesSnapshot = AllPiles.ToList();
+    //     foreach (var pile in pilesSnapshot)
+    //     {
+    //         // var cards = pile.Cards.ToList();
+    //         // var busesToPush = new List<SignalBus>();
+
+    //         // foreach (var ci in cards)
+    //         // {
+    //         //     busesToPush.Add(ci.PrepareBus(new SignalBus(signal)));
+
+    //         // }
+
+    //         // // 3. 모든 준비가 끝난 후, 한 번에 출발시킵니다.
+    //         // if (busesToPush.Count > 0)
+    //         //     ReactionStackManager.Instance.PushBuses(busesToPush); // PushSequence 사용 권장
+    //         var cards = pile.Cards.ToList();
+    //         foreach (var ci in cards)
+    //             ci.Fire(new SignalBus(signal));
+    //     }
+    // }
     public void BroadcastSignalToAllPiles(SignalType signal)
+{
+    // 1. 앞으로 실행할 모든 버스를 담을 '단 하나의' 리스트를 루프 시작 전에 만듭니다.
+    var allBusesToPush = new List<SignalBus>();
+
+    // 2. 모든 파일을 안전하게 순회합니다.
+    var pilesSnapshot = AllPiles.ToList();
+    foreach (var pile in pilesSnapshot)
     {
-        var pilesSnapshot = AllPiles.ToList();
-        foreach (var pile in pilesSnapshot)
+        var cards = pile.Cards.ToList();
+        foreach (var ci in cards)
         {
-            var cards = pile.Cards.ToList();
-            foreach (var ci in cards)
-                ci.Fire(new SignalBus(signal));
+            // 3. 'fire'가 아닌 'GetPreparedBus'로 준비된 버스를 가져와
+            //    하나의 거대한 리스트에 모두 담습니다.
+            var preparedBus = ci.PrepareBus(new SignalBus(signal));
+            if (preparedBus != null)
+            {
+                allBusesToPush.Add(preparedBus);
+            }
         }
     }
+
+    // 4. 모든 루프가 끝난 후, 수집된 모든 버스를 단 한 번에, 순서를 보장하여 실행시킵니다.
+    if (allBusesToPush.Count > 0)
+    {
+        // 여러 버스를 순서대로 처리해야 하므로 PushSequence를 사용하는 것이 가장 안전합니다.
+        ReactionStackManager.Instance.PushBuses(allBusesToPush);
+    }
+}
 
     public void UpdateAllCardUIs()
     {

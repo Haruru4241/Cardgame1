@@ -21,6 +21,33 @@ MonoBehaviour:
   Cost: 0
   Tags: []
   faction: 0
+  actionEntries:
+  - signal: 12
+    actions:
+    - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
+  - signal: 8
+    actions:
+    - {fileID: 11400000, guid: f8d9bcb8e31aa0843a311bd2b8ea34cb, type: 2}
+  - signal: 9
+    actions:
+    - {fileID: 11400000, guid: e48f7bce49137144a89baf8f371cb177, type: 2}
+  - signal: 14
+    actions: []
+  - signal: 7
+    actions:
+    - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
+  - signal: 10
+    actions:
+    - {fileID: 11400000, guid: 1660e14f677932c44966e0dc33c34879, type: 2}
+  - signal: 11
+    actions: []
+  - signal: 15
+    actions: []
+  - signal: 16
+    actions: []
+  - signal: 17
+    actions:
+    - {fileID: 11400000, guid: 13fa0338759436a4999689a456fa4ca6, type: 2}
   cardType: 0
   manaCost: 0
   attack: 0

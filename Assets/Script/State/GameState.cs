@@ -57,8 +57,19 @@ public abstract class GameStateBase
     }
     public void DeselectAll()
     {
-        foreach (var c in selected)
-            c.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
+        var busesToPush = new List<SignalBus>();
+
+        foreach (var ci in selected)
+        {
+            busesToPush.Add(ci.cardInstance.PrepareBus(new SignalBus(SignalType.OnUnSelect)));
+        }
+
+        // 3. 모든 준비가 끝난 후, 한 번에 출발시킵니다.
+        if (busesToPush.Count > 0)
+            ReactionStackManager.Instance.PushBuses(busesToPush); // PushSequence 사용 권장
+
+        // foreach (var c in selected)
+        //     c.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
         selected.Clear();
         _confirmed.Clear();
     }
@@ -87,7 +98,7 @@ public abstract class GameStateBase
     protected virtual void UseSelectedCards()
     {
         foreach (var c in selected)
-            c.UseCard();     
+            c.UseCard();
         selected.Clear();
     }
 }

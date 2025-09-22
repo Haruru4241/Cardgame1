@@ -93,13 +93,11 @@ public class ValueAction : BaseAction
     /// </summary>
     public override void Execute(SignalBus bus)
     {
-        if (bus == null ||GetValue(bus)!= null) return;
+        if (bus == null || GetValue(bus) == null) return;
         GameManager.Instance._logs += $"밸류 {Value}, {op} ";
         // Value 프로퍼티를 통해 현재 타입에 맞는 값을 전달합니다.
         bus.Calc(op, GetValue(bus));
-
     }
-    
     
     public virtual object GetValue(SignalBus bus)
     {

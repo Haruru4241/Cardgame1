@@ -8,7 +8,14 @@ public class ArtifactInstance : BaseInstance
     public ArtifactInstance(ArtifactData data)
     {
         Data = data;
-        RegisterProcessor(SignalType.OnDraw, data.onDrawActions);
+        foreach (var entry in data.actionEntries)
+        {
+            // 엔트리에 액션이 하나라도 있을 경우에만 등록
+            if (entry.actions != null && entry.actions.Count > 0)
+            {
+                RegisterProcessor(entry.signal, entry.actions);
+            }
+        }
     }
 
     public IEnumerable<ActionBubble> GetConditionalPassengers(SignalBus bus)

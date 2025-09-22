@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c68971c48894f774888d7cb98fd57b95, type: 3}
   m_Name: end
   m_EditorClassIdentifier: 
-  handPile: 4
-  usedPile: 6
-  discardPile: 2
+  handPile: 16
+  usedPile: 64
+  discardPile: 4

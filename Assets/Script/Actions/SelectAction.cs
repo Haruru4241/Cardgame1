@@ -12,18 +12,11 @@ public class SelectAction : BaseAction
 
     public override void Execute(SignalBus bus)
     {
-        var candidates = GetCandidates();
-
-        if (candidates.Count == 0)
-        {
-            Debug.LogWarning("후보가 없습니다.");
-            return;
-        }
         var selectState = GameManager.Instance.SelectState as SelectState;
 
         selectState.StartSelection(
-            candidates,
-            Mathf.Min(requiredCount, candidates.Count),
+            () => GetCandidates(),
+            requiredCount,
             list => OnSelectionFinished(list, bus),
             bus
         );
@@ -41,6 +34,7 @@ public class SelectAction : BaseAction
             // 후보 목록에 추가
             result.Add(ci);
         }
+        GameManager.Instance._logs += $"\n 선택 후보자 {result.Count} ";
 
         return result;
     }
@@ -48,10 +42,16 @@ public class SelectAction : BaseAction
 
     private void OnSelectionFinished(List<BaseInstance> list, SignalBus bus)
     {
-        foreach (var inst in list)
+        var busesToPush = new List<SignalBus>();
+
+        foreach (var ci in list)
         {
-            // 🔹 선택된 인스턴스에서 OnEffect 발동
-            inst.Fire(new SignalBus(SignalType.OnEffect, bus));
+            busesToPush.Add(ci.PrepareBus(new SignalBus(SignalType.OnEffect, bus)));
+            
         }
+
+        // 3. 모든 준비가 끝난 후, 한 번에 출발시킵니다.
+        if (busesToPush.Count > 0)
+            ReactionStackManager.Instance.PushBuses(busesToPush); // PushSequence 사용 권장
     }
 }

@@ -56,7 +56,7 @@ public class SignalBus
     {
         if (_bubbles.Count == 0 || !HasToken) return;
 
-        GameManager.Instance._logs += "버스 시작 ";
+        GameManager.Instance._logs += $"버스 시작{Signal} ";
         _bubbles[0].Next(this);
         ProcessSignalAction();
     }

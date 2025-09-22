@@ -1,10 +1,14 @@
+using System;
+
+[Flags]
 public enum PileType
 {
-    Rule = 0,
-    Deck = 1,
-    Discard = 2,
-    Exhaust = 3,
-    Hand = 4,
-    Destroy = 5,
-    Used = 6,
+    None      = 0,
+    Rule      = 1 << 0, // 1
+    Deck      = 1 << 1, // 2
+    Discard   = 1 << 2, // 4
+    Exhaust   = 1 << 3, // 8
+    Hand      = 1 << 4, // 16
+    Destroy   = 1 << 5, // 32
+    Used      = 1 << 6, // 64
 }

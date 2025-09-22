@@ -14,33 +14,31 @@ public class MoveToPileAction : BaseAction
 
     private void Apply(BaseInstance card)
     {
+        GameManager.Instance._logs += $"1{card.BaseCard.nameText.text} ";
         if (card == null) return;
+        
 
         var dm = DeckManager.Instance;
-        if (dm == null) return;
-
-        // ✅ 새 구조: 타입으로 목적지 Pile 검색
         var toPile = dm.GetPile(targetPile);
-        if (toPile == null)
-        {
-            Debug.LogWarning($"[MoveToPile] 대상 Pile({targetPile})이 활성화/생성되지 않았습니다.");
-            return;
-        }
+        var fromPile = (Pile)card.CurrentZone;
+        GameManager.Instance._logs += $"2{fromPile.PileSignal}{toPile.PileSignal} ";
+        
 
-        // ✅ 같은 곳이면 작업 불필요
-        if (card.CurrentZone == toPile)
-        {
-            return;
-        }
+        if (toPile == null || card.CurrentZone == toPile) return;
 
-        // 현재 파일에서 제거 (안전 가드)
-        card.CurrentZone?.Remove(card);
-
-        // 목적지 파일로 이동
+        // --- 2. 데이터 이동 (원자적 실행) ---
+        fromPile?.Remove(card);
         toPile.Add(card);
-
-        // UI 갱신 (핸드 변화에만 의존해도 되지만, 일단 안전하게 호출)
-        //dm.ReloadHandUI();
+        
         dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
+        GameManager.Instance._logs += $"3 {dm.GetPile(PileType.Hand).Cards.Count} ";
+
+        // --- 3. 신호 방송 ---
+        // 데이터 이동이 모두 끝난 후, 관련된 파일들의 변경 신호를 순서대로 방송합니다.
+        if (fromPile != null)
+        {
+            dm.BroadcastSignalToAllPiles(fromPile.PileSignal);
+        }
+        dm.BroadcastSignalToAllPiles(toPile.PileSignal);
     }
 }

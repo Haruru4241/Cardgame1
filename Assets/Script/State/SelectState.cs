@@ -15,29 +15,32 @@ public class SelectState : GameStateBase
     public SelectState(GameManager manager) : base(manager) { }
     private SignalBus _selectionBus;
 
-
     public void StartSelection(
-    List<BaseInstance> candidates,
-    int requiredCount,
-    Action<List<BaseInstance>> onSelected,
-    SignalBus bus                  // 🔹 버스 받기
-)
+        Func<List<BaseInstance>> getCandidatesFunc, // List<BaseInstance> 대신 Func<>
+        int requiredCount,
+        Action<List<BaseInstance>> onSelected,
+        SignalBus bus
+    )
     {
-        if (candidates == null || candidates.Count == 0 || requiredCount > candidates.Count)
+        // 1. 제어권부터 확보 (토큰 뺏기 및 상태 전환)
+        if (GameManager.Instance.CurrentState == this) { Debug.Log("재진입 에러"); return; }
+        _selectionBus = bus;
+        _selectionBus.TryTakeToken();
+
+        // 2. 제어권을 확보한 후에야 후보 생성을 시작
+        _candidateInstances = getCandidatesFunc(); // 전달받은 '설계도'를 여기서 실행!
+
+        if (_candidateInstances == null || _candidateInstances.Count == 0)
         {
             Debug.LogWarning("선택 후보가 없습니다!");
             ReturnToPreviousState();
             return;
         }
-        if (GameManager.Instance.CurrentState == this) Debug.Log("재진입 에러");
 
-        _candidateInstances = candidates;
-        _requiredCount = Mathf.Max(1, requiredCount);
+        // 3. 나머지 선택 준비 과정
+        _requiredCount = Mathf.Min(_candidateInstances.Count, requiredCount);
         _onSelected = onSelected;
         selected.Clear();
-
-        _selectionBus = bus;
-        _selectionBus.TryTakeToken();
 
         ChangeState(this);
         GameManager.Instance._logs += " 선택 모드 진입 ";
@@ -67,8 +70,7 @@ public class SelectState : GameStateBase
         // 1) 선택 UI 켜기
         UIManager.Instance.ShowCardSelectionUI(true);
 
-        var dm = DeckManager.Instance;
-        dm.ReloadCustomUI(_candidateInstances);
+        DeckManager.Instance.ReloadCustomUI(_candidateInstances);
 
         // 2) 후보 하이라이트 & 이벤트 구독
         foreach (var bc in _candidateInstances)
@@ -179,7 +181,7 @@ public class SelectState : GameStateBase
         if (!_candidateInstances.Contains(bc.cardInstance) && _confirmed.Contains(bc))
         {
             _confirmed.Remove(bc);
-            bc.SetHighlight(false, Color.clear);
+            bc.SetHighlight(true, Color.red);
             bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
             _candidateInstances.Add(bc.cardInstance); // 다시 후보에 넣어주기
             return;

@@ -145,6 +145,17 @@ public abstract class BaseInstance
 
         return bubbles;
     }
+    public SignalBus PrepareBus(SignalBus bus)
+    {
+        var Bubbles = BuildBubblesForSignal(bus);
+        if (Bubbles.Count == 0) return bus; // 실행할 액션이 없으면 null 반환
+
+        bus.AddPassengers(Bubbles);
+        bus.SetSourceInfo(this);
+        
+        GameManager.Instance._logs += $"prepare {bus.Signal}{bus._bubbles.Count} ";
+        return bus;
+    }
 
 
 

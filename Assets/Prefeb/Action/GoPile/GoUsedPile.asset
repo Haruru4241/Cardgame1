@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d28e162ed68917b499939ed36547dcbc, type: 3}
   m_Name: GoUsedPile
   m_EditorClassIdentifier: 
-  targetPile: 6
+  targetPile: 64

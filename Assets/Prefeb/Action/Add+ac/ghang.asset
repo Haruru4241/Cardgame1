@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11f2a1d55eb2cdc49b2424421d38d989, type: 3}
+  m_Name: ghang
+  m_EditorClassIdentifier: 
+  driverSignal: 15
+  heads:
+  - {fileID: 11400000, guid: 0cd3972b27516014db18c5486e3ce4f7, type: 2}
+  tails:
+  - {fileID: 11400000, guid: fdb20a4ac616bfd429c9fb6a4b6b307a, type: 2}
