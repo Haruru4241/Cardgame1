@@ -14,17 +14,17 @@ public class MainInputState : GameStateBase
         var dm = DeckManager.Instance;
         dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
         // 카드 클릭/호버 이벤트 구독
-        BaseCard.OnCardClicked += HandleCardClicked;
-        BaseCard.OnCardHovered += HandleCardHovered;
-        BaseCard.OnCardUnhovered += HandleCardUnhovered;
+        BaseController.OnEntityClicked += HandleCardClicked;
+        BaseController.OnEntityHovered += HandleCardHovered;
+        BaseController.OnEntityUnhovered += HandleCardUnhovered;
     }
 
     public override void Exit()
     {
         // 꼭 해제해 줘야 다른 상태로 넘어갈 때 이벤트가 중복되지 않습니다
-        BaseCard.OnCardClicked -= HandleCardClicked;
-        BaseCard.OnCardHovered -= HandleCardHovered;
-        BaseCard.OnCardUnhovered -= HandleCardUnhovered;
+        BaseController.OnEntityClicked -= HandleCardClicked;
+        BaseController.OnEntityHovered -= HandleCardHovered;
+        BaseController.OnEntityUnhovered -= HandleCardUnhovered;
     }
 
     public override void Update()

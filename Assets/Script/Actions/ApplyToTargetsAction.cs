@@ -27,7 +27,7 @@ public class ApplyToTargetsAction : BaseAction
         var origin = bus.GetSourceCard();
         if (origin == null) return;
 
-        var targets = targetSelector.GetTargets(origin);
+        var targets = targetSelector.GetTargets(origin, bus);
         foreach (var target in targets)
         {
             // 1) 대상별 새 프로세서 생성

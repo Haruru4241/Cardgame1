@@ -15,7 +15,7 @@ public class BaseData : ScriptableObject
 
     [TextArea] public string Description; // 카드 설명(룰텍스트)
     [TextArea] public string FlavorText;  // 카드 flavor text (세계관, 연출용)
-    public int Cost;
+    public int BuyCost;
     public List<TagData> Tags;
     // signal actions 등 공통 가능
     public CardFaction faction;           // 소속 진영/클래스(선택)

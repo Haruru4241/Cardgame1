@@ -8,6 +8,6 @@ public class HighlightAction : BaseAction
 
     public override void Execute(SignalBus Bus)
     {
-        Bus.GetSourceCard().BaseCard.transform.localScale = highlight ? Vector3.one * 1.1f : Vector3.one;
+        Bus.GetSourceCard().controller.transform.localScale = highlight ? Vector3.one * 1.1f : Vector3.one;
     }
 }

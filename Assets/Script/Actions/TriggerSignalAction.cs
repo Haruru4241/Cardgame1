@@ -8,12 +8,18 @@ using System;
 [CreateAssetMenu(menuName = "CardGame/Actions/TriggerSignalAction")]
 public class TriggerSignalAction : BaseAction
 {
+    public TargetSelector targetSelector;
     [Tooltip("이 카드에 보낼 시그널")]
     public SignalType signal;
-    
+
     public override void Execute(SignalBus Bus)
     {
-        // 즉시 해당 시그널을 카드에 보냅니다.
-        Bus.GetSourceCard().Fire(new SignalBus(signal));
+        // 1. TargetSelector를 이용해 모든 대상을 찾습니다.
+        var targets = targetSelector.GetTargets(Bus.GetSourceCard(), Bus);
+
+        foreach (var target in targets)
+        {
+            target.Fire(new SignalBus(signal, Bus));
+        }
     }
 }

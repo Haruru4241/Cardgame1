@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f208a5f2043f6843a2015a439298e0a, type: 3}
+  m_Name: Enemy1
+  m_EditorClassIdentifier: 
+  ID: 
+  Name: "\uAC1C"
+  Rarity: 0
+  Artwork: {fileID: 0}
+  Description: "\uC0C8"
+  FlavorText: 
+  BuyCost: 5
+  Tags: []
+  faction: 0
+  actionEntries:
+  - signal: 30
+    actions:
+    - {fileID: 11400000, guid: 70868ecf9f4c048479a6a50dbccd605c, type: 2}
+  Health: 5
+  Damage: 4
+  defense: 3
+  moveRange: 3
+  attackRange: 3
+  speed: 3
+  targetType: 0
+  activeSkills: []

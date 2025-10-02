@@ -443,7 +443,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2739449906114470453}
-  - component: {fileID: 7089993961689957699}
+  - component: {fileID: 1486069093213588530}
   m_Layer: 5
   m_Name: CardPrefeb
   m_TagString: Untagged
@@ -476,7 +476,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7089993961689957699
+--- !u!114 &1486069093213588530
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -485,17 +485,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6062244652577276555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1d584f6e1a5e8644a859ee03a4bd13a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f014f036e69e2847aaee8a454362c75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundImage: {fileID: 8041511393938856617}
-  artworkImage: {fileID: 5013219513109322758}
   nameText: {fileID: 2816874843321947661}
   descriptionText: {fileID: 3494849912500078615}
-  manaCostText: {fileID: 3752892827614755749}
-  buyCostText: {fileID: 7992347856041191801}
+  backgroundImage: {fileID: 8041511393938856617}
+  artworkImage: {fileID: 5013219513109322758}
   highlightOutline: {fileID: 4534459461458604655}
   borderImage: {fileID: 0}
+  manaCostText: {fileID: 3752892827614755749}
+  buyCostText: {fileID: 7992347856041191801}
 --- !u!1 &8782296585001298087
 GameObject:
   m_ObjectHideFlags: 0

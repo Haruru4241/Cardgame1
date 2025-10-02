@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6461a93223f6e24479ec3295f0da7bff, type: 3}
+  m_Name: "\uB370\uBBF8\uC9C0\uCE74\uB4DC"
+  m_EditorClassIdentifier: 
+  ID: 
+  Name: "\uB370\uBBF8\uC9C0"
+  Rarity: 0
+  Artwork: {fileID: 0}
+  Description: "\uD53C\uD574\uB97C \uC900\uB2E4."
+  FlavorText: 
+  BuyCost: 3
+  Tags: []
+  faction: 0
+  actionEntries:
+  - signal: 12
+    actions:
+    - {fileID: 11400000, guid: 502986edfbb41c54bb251b26bf26579f, type: 2}
+  - signal: 8
+    actions:
+    - {fileID: 11400000, guid: f8d9bcb8e31aa0843a311bd2b8ea34cb, type: 2}
+  - signal: 9
+    actions:
+    - {fileID: 11400000, guid: e48f7bce49137144a89baf8f371cb177, type: 2}
+  - signal: 14
+    actions: []
+  - signal: 7
+    actions:
+    - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
+  - signal: 10
+    actions:
+    - {fileID: 11400000, guid: c2c2d984b4c80c1418ee9e11375e5164, type: 2}
+  - signal: 11
+    actions: []
+  - signal: 18
+    actions: []
+  - signal: 16
+    actions: []
+  - signal: 18
+    actions:
+    - {fileID: 11400000, guid: 13fa0338759436a4999689a456fa4ca6, type: 2}
+  - signal: 28
+    actions:
+    - {fileID: 11400000, guid: 158b36d371e7e194bb101c30001ea818, type: 2}
+  cardType: 0
+  manaCost: 0

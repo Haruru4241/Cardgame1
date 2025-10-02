@@ -5,6 +5,6 @@ public class UpdateCardUIAction : BaseAction
 {
     public override void Execute(SignalBus bus)
     {
-        bus.GetSourceCard()?.BaseCard?.UpdateUI();
+        bus.GetSourceCard()?.controller?.UpdateUI();
     }
 }

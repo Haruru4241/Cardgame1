@@ -6,7 +6,7 @@ using UnityEngine;
 public static class CardSearchUtility
 {
     // 모든 카드 인스턴스 shortcut
-    private static List<BaseInstance> All => DeckManager.Instance.AllInstances;
+    private static List<BaseInstance> All => GameManager.Instance.AllInstances;
 
     /// <summary>
     /// self와 동일한 CardData를 갖고, self 인스턴스가 아닌 카드만 반환
@@ -14,7 +14,7 @@ public static class CardSearchUtility
     public static List<BaseInstance> FindSameDataExceptSelf(BaseInstance self)
     {
         return All
-            .Where(c => c != self && c.BaseData == self.BaseData)
+            .Where(c => c != self && c._data == self._data)
             .ToList();
     }
 
@@ -25,7 +25,7 @@ public static class CardSearchUtility
     {
         return All
             .Where(c => c != self && 
-                        c.BaseData.Name.Equals(self.BaseData.Name, StringComparison.Ordinal))
+                        c._data.Name.Equals(self._data.Name, StringComparison.Ordinal))
             .ToList();
     }
 
@@ -43,17 +43,17 @@ public static class CardSearchUtility
         IEnumerable<BaseInstance> query = All.Where(c => c != self);
 
         if (matchData)
-            query = query.Where(c => c.BaseData == self.BaseData);
+            query = query.Where(c => c._data == self._data);
 
         if (matchName)
-            query = query.Where(c => c.BaseData.Name.Equals(
-                self.BaseData.Name, StringComparison.Ordinal));
+            query = query.Where(c => c._data.Name.Equals(
+                self._data.Name, StringComparison.Ordinal));
 
         if (matchFaction)
-            query = query.Where(c => c.BaseData.faction == self.BaseData.faction);
+            query = query.Where(c => c._data.faction == self._data.faction);
 
         if (maxCost.HasValue)
-            query = query.Where(c => c.BaseData.Cost <= maxCost.Value);
+            query = query.Where(c => c._data.BuyCost <= maxCost.Value);
 
         return query.ToList();
     }

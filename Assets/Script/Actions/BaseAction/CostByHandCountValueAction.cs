@@ -16,6 +16,6 @@ public class CountFromTargetSelectorValueProvider : ValueAction
         }
 
         // TargetSelector에게 대상 찾기를 위임하고, 그 결과 목록의 개수를 반환합니다.
-        return targetSelector.GetTargets(bus.SourceObject).Count;
+        return targetSelector.GetTargets(bus.SourceObject, bus).Count;
     }
 }

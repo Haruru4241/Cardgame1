@@ -14,7 +14,7 @@ public class MoveToPileAction : BaseAction
 
     private void Apply(BaseInstance card)
     {
-        GameManager.Instance._logs += $"1{card.BaseCard.nameText.text} ";
+        GameManager.Instance._logs += $"1{card.controller.nameText.text} ";
         if (card == null) return;
         
 

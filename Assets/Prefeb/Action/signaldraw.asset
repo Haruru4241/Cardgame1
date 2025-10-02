@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 113a647cba362a94d8085e6a6e5478d1, type: 3}
   m_Name: signaldraw
   m_EditorClassIdentifier: 
+  targetSelector: {fileID: 11400000, guid: 211e833c85121194587ba8c4cfa8aa7a, type: 2}
   signal: 12

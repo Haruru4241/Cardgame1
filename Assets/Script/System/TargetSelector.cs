@@ -9,6 +9,8 @@ public class TargetSelector : ScriptableObject
     [Tooltip("자기 자신 제외")]
     public bool excludeSelf = true;
     public bool selectSelfOnly = false;
+    [Tooltip("GetTargets에 전달된 busTarget을 직접 사용하려면 체크")]
+    public bool useBusTargetAsPrimary = false;
 
     [Tooltip("같은 CardData만 허용")]
     public bool matchSameData = false;
@@ -20,6 +22,9 @@ public class TargetSelector : ScriptableObject
     public bool matchSameFaction = false;
     [Tooltip("특정 파일 타입만 허용")]
     public PileType zone = PileType.None;
+
+    [Tooltip("체크하면 다른 모든 조건을 무시하고 오직 적 인스턴스만 찾습니다.")]
+    public bool enemiesOnly = false;
 
     [Header("특정 카드 데이터 필터")]
     [Tooltip("이 리스트에 포함된 CardData만 허용 (비어 있으면 무시)")]
@@ -42,10 +47,10 @@ public class TargetSelector : ScriptableObject
     /// <summary>
     /// 설정에 맞춰 대상을 추출합니다.
     /// </summary>
-    public List<BaseInstance> GetTargets(BaseInstance origin)
+    public List<BaseInstance> GetTargets(BaseInstance origin = null, SignalBus bus = null)
     {
         // 1) 초기 후보: AllCardInstances + manualTargets
-        var all = DeckManager.Instance.AllInstances;
+        var all = GameManager.Instance.AllInstances;
         IEnumerable<BaseInstance> candidates = all;
 
         candidates = candidates.Where(c => !(c is RuleInstance));
@@ -55,76 +60,52 @@ public class TargetSelector : ScriptableObject
         {
             candidates = manualTargets;
         }
+        if (useBusTargetAsPrimary && bus.Target != null)
+        {
+            return new List<BaseInstance> { bus.Target };
+        }
+        if (enemiesOnly)
+        {
+            candidates = BattleManager.Instance.enemyInstances;
+        }
         if (zone != PileType.None)
         {
             candidates = candidates.Where(c =>
                 c.CurrentZone is Pile currentPile && (zone & currentPile.Type) != 0
             );
         }
+        if (origin != null)
+        {
+            // 3) excludeSelf
+            if (excludeSelf)
+                candidates = candidates.Where(c => c != origin);
+            else if (selectSelfOnly)
+                candidates = candidates.Where(c => c == origin);
 
-        // 3) excludeSelf
-        if (excludeSelf)
-            candidates = candidates.Where(c => c != origin);
-        else if (selectSelfOnly)
-            candidates = candidates.Where(c => c == origin);
+            // 4) matchSameData
+            if (matchSameData)
+                candidates = candidates.Where(c => c._data == origin._data);
 
-        // 4) matchSameData
-        if (matchSameData)
-            candidates = candidates.Where(c => c.BaseData == origin.BaseData);
+            // 5) matchSameName
+            if (matchSameName)
+                candidates = candidates.Where(c => string.Equals(c?._data?.Name, origin._data?.Name));
 
-        // 5) matchSameName
-        if (matchSameName)
-            candidates = candidates.Where(c => string.Equals(c?.BaseData?.Name, origin?.BaseData?.Name));
-
-        // 6) matchSameFaction
-        if (matchSameFaction)
-            candidates = candidates.Where(c =>
-                c.BaseData.faction == origin.BaseData.faction);
+            // 6) matchSameFaction
+            if (matchSameFaction)
+                candidates = candidates.Where(c => c._data.faction == origin._data.faction);
+        }
 
         // 7) allowCardDatas
         if (allowCardDatas != null && allowCardDatas.Count > 0)
             candidates = candidates.Where(c =>
-                allowCardDatas.Contains(c.BaseData));
+                allowCardDatas.Contains(c._data));
 
         // 8) cost range
         if (useCostRange)
             candidates = candidates.Where(c =>
-                c.BaseData.Cost >= minCost && c.BaseData.Cost <= maxCost);
+                c._data.BuyCost >= minCost && c._data.BuyCost <= maxCost);
 
         // 9) 최종 반환
         return candidates.Distinct().ToList();
     }
-    private void DebugCheck(BaseInstance origin, BaseInstance c)
-    {
-        if (c == null)
-        {
-            Debug.LogWarning("[TargetSelector] candidate 자체가 null 입니다.");
-            return;
-        }
-
-        if (c.BaseData == null)
-        {
-            Debug.LogWarning($"[TargetSelector] {c.BaseData} 의 BaseData가 null 입니다.");
-            Debug.LogWarning($"{c.BaseCard.nameText.text}{c.BaseCard.CardData.Name}");
-            return;
-        }
-
-        if (origin == null)
-        {
-            Debug.LogWarning("[TargetSelector] origin 자체가 null 입니다.");
-            return;
-        }
-
-        if (origin.BaseData == null)
-        {
-            Debug.LogWarning($"[TargetSelector] origin({origin.BaseData}) 의 BaseData가 null 입니다.");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(c.BaseData.Name))
-        {
-            Debug.LogWarning($"[TargetSelector] {c.BaseData.Name} 의 BaseData.Name 이 null 혹은 빈 문자열 입니다.");
-        }
-    }
-
 }

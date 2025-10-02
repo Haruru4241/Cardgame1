@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance;
-    private List<BaseCard> selected = new List<BaseCard>();
+    private List<BaseController> selected = new List<BaseController>();
 
     private void Awake() => Instance = this;
 

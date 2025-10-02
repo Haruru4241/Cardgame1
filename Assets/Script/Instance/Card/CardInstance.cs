@@ -7,7 +7,7 @@ public class CardInstance : BaseInstance
 {
     public CardInstance(CardData data)
     {
-        BaseData = data;
+        _data = data;
 
         CurrentZone = null;
         SetupBaseProcessors(data);
@@ -37,7 +37,7 @@ public class CardInstance : BaseInstance
         // 구매 비용
         AddProcessor(CreateBaseProcessorAction(
             SignalType.BuyCostEvaluation,
-            data.Cost,            // int
+            data.BuyCost,            // int
             CalcOp.Set));
 
         // 아트워크 (Sprite)  ← 아래 Cell 확장 참고

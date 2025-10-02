@@ -28,5 +28,10 @@ public enum SignalType
     OnExhaustPileChanged,
     OnUsedPileChanged,
     OnRulePileChanged,
+    HPEvaluation,
+    DealDamageEvaluation,
+    TakeDamageEvaluation,
+    OnTakeDamage,
+    OnDealDamage,
     // ...다른 신호들 추가 가능
 }

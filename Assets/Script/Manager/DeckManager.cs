@@ -13,7 +13,6 @@ public class DeckManager : MonoBehaviour
 
     public IReadOnlyList<Pile> AllPiles => _piles;
 
-    public List<BaseInstance> AllInstances { get; } = new List<BaseInstance>();
     public RuleInstance Rule { get; private set; }
 
     [Header("핸드 UI")]
@@ -82,7 +81,7 @@ public class DeckManager : MonoBehaviour
         if (exhaust != null) exhaust.Cards.Clear();
         hand.Cards.Clear();
         if (used != null) used.Cards.Clear();
-        AllInstances.Clear();
+        GameManager.Instance.AllInstances.Clear();
 
         // 덱 카드 생성
         var temp = new List<CardInstance>();
@@ -106,7 +105,8 @@ public class DeckManager : MonoBehaviour
 
         // 룰 인스턴스
         var ruleInst = new RuleInstance(preset);
-        AllInstances.Add(ruleInst);
+        Rule = ruleInst;
+        GameManager.Instance.AllInstances.Add(ruleInst);
         rulePile.Add(ruleInst);
 
         //UpdateAllCardUIs();
@@ -122,13 +122,13 @@ public class DeckManager : MonoBehaviour
         }
 
         var ci = new CardInstance(data);
-        AllInstances.Add(ci);
+        GameManager.Instance.AllInstances.Add(ci);
 
         // UI 프리팹 생성
         var obj = Object.Instantiate(cardPrefab, parent ?? dumpArea);
-        var bc = obj.GetComponent<BaseCard>();
+        var bc = obj.GetComponent<BaseController>();
 
-        ci.BaseCard = bc;
+        ci.controller = bc;
         bc.Setup(data, ci);
         obj.SetActive(active);
 
@@ -154,20 +154,21 @@ public class DeckManager : MonoBehaviour
         ReloadCustomUI(GetPile(PileType.Hand).Cards);
         return ci;
     }
+
     public void ReloadCustomUI(List<BaseInstance> visibleCards)
     {
         if (visibleCards == null) return;
 
         // 1. 현재 handArea 의 카드들 수집
-        List<BaseCard> uiCards = new List<BaseCard>();
+        List<BaseController> uiCards = new List<BaseController>();
         foreach (Transform child in handArea)
             if (child.gameObject.activeSelf)
-                uiCards.Add(child.GetComponent<BaseCard>());
+                uiCards.Add(child.GetComponent<BaseController>());
 
         // 2. visibleCards 에 없는 UI → dumpArea 로 이동
         foreach (var uiCard in uiCards)
         {
-            if (!visibleCards.Any(ci => ci.BaseCard == uiCard))
+            if (!visibleCards.Any(ci => ci.controller == uiCard))
             {
                 uiCard.transform.SetParent(dumpArea);
                 uiCard.gameObject.SetActive(false);
@@ -178,7 +179,7 @@ public class DeckManager : MonoBehaviour
         for (int i = 0; i < visibleCards.Count; i++)
         {
             var ci = visibleCards[i];
-            BaseCard bc = ci.BaseCard;
+            BaseController bc = ci.controller;
             if (bc == null) continue;
 
             if (bc.transform.parent != handArea)
@@ -203,64 +204,119 @@ public class DeckManager : MonoBehaviour
         if (shuffle) toPile.Shuffle();
     }
 
-    // public void BroadcastSignalToAllPiles(SignalType signal)
-    // {
-    //     var pilesSnapshot = AllPiles.ToList();
-    //     foreach (var pile in pilesSnapshot)
-    //     {
-    //         // var cards = pile.Cards.ToList();
-    //         // var busesToPush = new List<SignalBus>();
 
-    //         // foreach (var ci in cards)
-    //         // {
-    //         //     busesToPush.Add(ci.PrepareBus(new SignalBus(signal)));
-
-    //         // }
-
-    //         // // 3. 모든 준비가 끝난 후, 한 번에 출발시킵니다.
-    //         // if (busesToPush.Count > 0)
-    //         //     ReactionStackManager.Instance.PushBuses(busesToPush); // PushSequence 사용 권장
-    //         var cards = pile.Cards.ToList();
-    //         foreach (var ci in cards)
-    //             ci.Fire(new SignalBus(signal));
-    //     }
-    // }
-    public void BroadcastSignalToAllPiles(SignalType signal)
-{
-    // 1. 앞으로 실행할 모든 버스를 담을 '단 하나의' 리스트를 루프 시작 전에 만듭니다.
-    var allBusesToPush = new List<SignalBus>();
-
-    // 2. 모든 파일을 안전하게 순회합니다.
-    var pilesSnapshot = AllPiles.ToList();
-    foreach (var pile in pilesSnapshot)
+    public void BroadcastSignalBus(SignalBus bus)
     {
-        var cards = pile.Cards.ToList();
-        foreach (var ci in cards)
+        var pilesSnapshot = AllPiles.ToList();
+        foreach (var pile in pilesSnapshot)
         {
-            // 3. 'fire'가 아닌 'GetPreparedBus'로 준비된 버스를 가져와
-            //    하나의 거대한 리스트에 모두 담습니다.
-            var preparedBus = ci.PrepareBus(new SignalBus(signal));
-            if (preparedBus != null)
+            var cards = pile.Cards.ToList();
+            foreach (var ci in cards)
             {
-                allBusesToPush.Add(preparedBus);
+                ci.PrepareBus(bus);
             }
+        }
+
+        ReactionStackManager.Instance.PushBus(bus);
+    }
+    public void BroadcastSignalToAllPiles(SignalType signal)
+    {
+        // 1. 앞으로 실행할 모든 버스를 담을 '단 하나의' 리스트를 루프 시작 전에 만듭니다.
+        var allBusesToPush = new List<SignalBus>();
+
+        // 2. 모든 파일을 안전하게 순회합니다.
+        var pilesSnapshot = AllPiles.ToList();
+        foreach (var pile in pilesSnapshot)
+        {
+            var cards = pile.Cards.ToList();
+            foreach (var ci in cards)
+            {
+                // 3. 'fire'가 아닌 'GetPreparedBus'로 준비된 버스를 가져와
+                //    하나의 거대한 리스트에 모두 담습니다.
+                var preparedBus = ci.PrepareBus(new SignalBus(signal));
+                if (preparedBus != null)
+                {
+                    allBusesToPush.Add(preparedBus);
+                }
+            }
+        }
+
+        // 4. 모든 루프가 끝난 후, 수집된 모든 버스를 단 한 번에, 순서를 보장하여 실행시킵니다.
+        if (allBusesToPush.Count > 0)
+        {
+            // 여러 버스를 순서대로 처리해야 하므로 PushSequence를 사용하는 것이 가장 안전합니다.
+            ReactionStackManager.Instance.PushBuses(allBusesToPush);
+        }
+    }
+    /// <summary>
+    /// (신규) 일반 게임 상태에 맞춰 전체 UI를 새로고침합니다.
+    /// 손패는 handArea에, 적은 enemyArea에 배치합니다.
+    /// </summary>
+    public void ReloadForMainState()
+    {
+        // 1. handArea를 깨끗하게 비웁니다.
+        ClearArea(handArea);
+
+        // 2. 손패 파일(Hand Pile)에 있는 카드들을 handArea에 순서대로 배치합니다.
+        ArrangeInstancesInArea(GetPile(PileType.Hand).Cards, handArea);
+
+        // 3. 현재 전투 중인 모든 적들을 enemyArea에 배치합니다.
+        // BattleManager가 적 목록을 관리한다고 가정합니다.
+        if (BattleManager.Instance != null)
+        {
+            ArrangeInstancesInArea(BattleManager.Instance.enemyInstances, BattleManager.Instance.enemyArea);
         }
     }
 
-    // 4. 모든 루프가 끝난 후, 수집된 모든 버스를 단 한 번에, 순서를 보장하여 실행시킵니다.
-    if (allBusesToPush.Count > 0)
+    /// <summary>
+    /// (신규) 선택 상태에 맞춰 UI를 새로고침합니다.
+    /// 모든 후보 인스턴스를 handArea에 일시적으로 표시합니다.
+    /// </summary>
+    /// <param name="candidates">화면에 표시할 후보 인스턴스 목록</param>
+    public void ReloadForSelectionState(List<BaseInstance> candidates)
     {
-        // 여러 버스를 순서대로 처리해야 하므로 PushSequence를 사용하는 것이 가장 안전합니다.
-        ReactionStackManager.Instance.PushBuses(allBusesToPush);
-    }
-}
+        // 1. handArea를 깨끗하게 비웁니다.
+        ClearArea(handArea);
 
-    public void UpdateAllCardUIs()
+        // 2. 전달받은 후보 목록을 handArea에 순서대로 배치합니다.
+        ArrangeInstancesInArea(candidates, handArea);
+    }
+
+    /// <summary>
+    /// (헬퍼 메서드) 특정 구역(Area)에 있는 모든 UI 컨트롤러를 dumpArea로 옮깁니다.
+    /// </summary>
+    private void ClearArea(Transform area)
     {
-        foreach (var ci in AllInstances)
+        // 자식 오브젝트 리스트의 복사본을 만들어 순회합니다. (순회 중 삭제 에러 방지)
+        foreach (Transform child in area.Cast<Transform>().ToList())
         {
-            if (ci.BaseCard != null)
-                ci.BaseCard.UpdateUI();
+            child.SetParent(dumpArea);
+            child.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// (헬퍼 메서드) 주어진 인스턴스 목록을 특정 구역(Area)에 순서대로 배치합니다.
+    /// </summary>
+    private void ArrangeInstancesInArea(IEnumerable<BaseInstance> instances, Transform area)
+    {
+        if (instances == null) return;
+
+        int i = 0;
+        foreach (var instance in instances)
+        {
+            var controller = instance.controller;
+            if (controller == null) continue;
+
+            // 올바른 부모 Transform으로 옮기고 활성화합니다.
+            if (controller.transform.parent != area)
+            {
+                controller.transform.SetParent(area);
+            }
+            controller.gameObject.SetActive(true);
+
+            // 순서를 맞춥니다.
+            controller.transform.SetSiblingIndex(i++);
         }
     }
 }

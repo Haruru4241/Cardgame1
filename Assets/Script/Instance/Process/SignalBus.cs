@@ -27,6 +27,7 @@ public class SignalBus
 
     // --- 계산 셀: 버스당 1개 ---
     private readonly Cell _cell = new Cell();
+    public BaseInstance Target { get; set; }
 
     // 공개 접근자(원하면 private set 등으로 조절)
     public CellKind CalcKind => _cell.Kind;
@@ -94,8 +95,6 @@ public class SignalBus
             .OrderBy(b => b.GetPriority())
             .ToList();
     }
-
-
     public BaseInstance GetSourceCard() => SourceObject;
 
     // SignalBus 내부

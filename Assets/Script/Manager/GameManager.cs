@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     public GameStateBase CurrentState { get; set; }
     public GameStateBase PreviousState { get; set; }
 
+    public List<BaseInstance> AllInstances { get; } = new List<BaseInstance>();
+
     public string _logs = "";
     [ContextMenu("▶ Show Signal–Processor Bindings")]
     public void DebugLogBindings()
@@ -42,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        BattleManager.Instance.StartBattle();
         DeckManager.Instance.SetupGame(deckPreset);
 
         MainState.ChangeState(MainState); // 최초 상태
@@ -49,7 +52,6 @@ public class GameManager : MonoBehaviour
             .Select(data => new ArtifactInstance(data))
             .ToList();
         TurnManager.Instance.StartTurn();
-
     }
     private void Update()
     {

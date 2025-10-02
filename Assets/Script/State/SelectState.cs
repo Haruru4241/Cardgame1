@@ -48,7 +48,7 @@ public class SelectState : GameStateBase
 
     private void CompleteSelection()
     {
-        var result = _confirmed.Select(bc => bc.cardInstance).ToList();
+        var result = _confirmed.Select(bc => bc.baseInstance).ToList();
         var onSelected = _onSelected;
         GameManager.Instance._logs += "선택 모드 탈출";
 
@@ -70,22 +70,23 @@ public class SelectState : GameStateBase
         // 1) 선택 UI 켜기
         UIManager.Instance.ShowCardSelectionUI(true);
 
-        DeckManager.Instance.ReloadCustomUI(_candidateInstances);
+        //DeckManager.Instance.ReloadCustomUI(_candidateInstances);
+        DeckManager.Instance.ReloadForSelectionState(_candidateInstances);
 
         // 2) 후보 하이라이트 & 이벤트 구독
         foreach (var bc in _candidateInstances)
         {
-            bc.BaseCard.SetHighlight(true, Color.red);
+            bc.controller?.SetHighlight(true, Color.red);
         }
-        BaseCard.OnCardClicked += OnCandidateClicked;
-        BaseCard.OnCardHovered += OnCardHovered;
-        BaseCard.OnCardUnhovered += OnCardUnhovered;
+        BaseController.OnEntityClicked += OnCandidateClicked;
+        BaseController.OnEntityHovered += OnCardHovered;
+        BaseController.OnEntityUnhovered += OnCardUnhovered;
     }
     public override void Exit()
     {
-        BaseCard.OnCardClicked -= OnCandidateClicked;
-        BaseCard.OnCardHovered -= OnCardHovered;
-        BaseCard.OnCardUnhovered -= OnCardUnhovered;
+        BaseController.OnEntityClicked -= OnCandidateClicked;
+        BaseController.OnEntityHovered -= OnCardHovered;
+        BaseController.OnEntityUnhovered -= OnCardUnhovered;
 
         // 혹시 클린업이 안 됐다면 안전하게 한 번 더
         Cleanup();
@@ -127,13 +128,13 @@ public class SelectState : GameStateBase
             if (Input.GetKeyDown(i.ToString()))
             {
                 var ci = _candidateInstances[i - 1];
-                var bc = ci.BaseCard;
+                var bc = ci.controller;
 
                 // 2) preview에 이미 있으면 토글 해제
                 if (selected.Contains(bc))
                 {
                     selected.Remove(bc);
-                    bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
+                    bc.baseInstance.Fire(new SignalBus(SignalType.OnUnSelect));
                     break;
                 }
 
@@ -141,7 +142,7 @@ public class SelectState : GameStateBase
                 if (CanSelectMore())
                 {
                     selected.Add(bc);
-                    bc.cardInstance.Fire(new SignalBus(SignalType.OnSelect));
+                    bc.baseInstance.Fire(new SignalBus(SignalType.OnSelect));
 
                     // 4) total이 requiredCount에 도달하면 즉시 확정
                     if (selected.Count + _confirmed.Count == _requiredCount)
@@ -156,43 +157,43 @@ public class SelectState : GameStateBase
         }
     }
 
-    private void OnCardHovered(BaseCard bc)
+    private void OnCardHovered(BaseController bc)
     {
         // 후보 카드만 처리
-        if (_candidateInstances.Contains(bc.cardInstance) && CanSelectMore())
+        if (_candidateInstances.Contains(bc.baseInstance) && CanSelectMore())
         {
             selected.Add(bc);
-            bc.cardInstance.Fire(new SignalBus(SignalType.OnSelect));
+            bc.baseInstance.Fire(new SignalBus(SignalType.OnSelect));
         }
     }
 
-    private void OnCardUnhovered(BaseCard bc)
+    private void OnCardUnhovered(BaseController bc)
     {
-        if (_candidateInstances.Contains(bc.cardInstance) && selected.Contains(bc))
+        if (_candidateInstances.Contains(bc.baseInstance) && selected.Contains(bc))
         {
             selected.Remove(bc);
-            bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
+            bc.baseInstance.Fire(new SignalBus(SignalType.OnUnSelect));
         }
     }
 
-    private void OnCandidateClicked(BaseCard bc)
+    private void OnCandidateClicked(BaseController bc)
     {
         // 후보가 아닌데 이미 확정된 카드라면 → 해제
-        if (!_candidateInstances.Contains(bc.cardInstance) && _confirmed.Contains(bc))
+        if (!_candidateInstances.Contains(bc.baseInstance) && _confirmed.Contains(bc))
         {
             _confirmed.Remove(bc);
             bc.SetHighlight(true, Color.red);
-            bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
-            _candidateInstances.Add(bc.cardInstance); // 다시 후보에 넣어주기
+            bc.baseInstance.Fire(new SignalBus(SignalType.OnUnSelect));
+            _candidateInstances.Add(bc.baseInstance); // 다시 후보에 넣어주기
             return;
         }
 
         // 새로 선택하는 경우
-        if (_candidateInstances.Contains(bc.cardInstance))
+        if (_candidateInstances.Contains(bc.baseInstance))
         {
             OnCardUnhovered(bc);
             _confirmed.Add(bc);
-            _candidateInstances.Remove(bc.cardInstance);
+            _candidateInstances.Remove(bc.baseInstance);
             bc.SetHighlight(true, Color.blue);
 
             // 원하는 개수까지 모였으면 완료
@@ -219,14 +220,14 @@ public class SelectState : GameStateBase
         {
             foreach (var bc in _candidateInstances)
             {
-                bc.BaseCard.SetHighlight(false, Color.clear);
+                bc.controller.SetHighlight(false, Color.clear);
             }
         }
         if (_confirmed != null)
         {
             foreach (var bc in _confirmed)
             {
-                bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
+                bc.baseInstance.Fire(new SignalBus(SignalType.OnUnSelect));
                 bc.SetHighlight(false, Color.clear);
             }
             _confirmed.Clear();
@@ -235,7 +236,7 @@ public class SelectState : GameStateBase
         {
             foreach (var bc in selected)
             {
-                bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));
+                bc.baseInstance.Fire(new SignalBus(SignalType.OnUnSelect));
             }
             selected.Clear();
         }

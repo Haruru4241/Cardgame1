@@ -12,6 +12,6 @@ public class SequenceAction : BaseAction
 
     public override void Execute(SignalBus bus)
     {
-        EvalRun(new SignalBus(driverSignal, bus), heads, tails, new[] { bus.GetSourceCard() });
+        SequenceAction(new SignalBus(driverSignal, bus), heads, tails, new[] { bus.GetSourceCard() });
     }
 }

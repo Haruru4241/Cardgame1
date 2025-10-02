@@ -11,10 +11,6 @@ public class Zone
     protected readonly List<BaseInstance> _items = new List<BaseInstance>();
     public IReadOnlyList<BaseInstance> Items => _items;
 
-    public Zone(string name)
-    {
-        Name = name;
-    }
 
     // 가벼운 기본 동작 (특수 처리는 파생 클래스에서 오버라이드)
     public virtual void Add(BaseInstance inst)
@@ -22,6 +18,7 @@ public class Zone
         if (inst == null) return;
         if (_items.Contains(inst)) return;
         _items.Add(inst);
+        inst.CurrentZone = this;
     }
 
     public virtual bool Remove(BaseInstance inst)

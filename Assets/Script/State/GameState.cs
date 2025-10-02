@@ -8,8 +8,8 @@ public abstract class GameStateBase
 {
     protected GameManager gameManager;
     public GameStateBase(GameManager manager) { gameManager = manager; }
-    protected List<BaseCard> selected = new List<BaseCard>();
-    protected List<BaseCard> _confirmed = new List<BaseCard>(); // 최종 확정 선택
+    protected List<BaseController> selected = new List<BaseController>();
+    protected List<BaseController> _confirmed = new List<BaseController>(); // 최종 확정 선택
 
     public virtual void Enter() { }
     public virtual void Exit() { }
@@ -38,21 +38,21 @@ public abstract class GameStateBase
             {
                 var pileCards = DeckManager.Instance.GetPile(PileType.Hand).Cards;
                 if (i - 1 < pileCards.Count)
-                    OnCardClicked(pileCards[i - 1].BaseCard);
+                    OnCardClicked(pileCards[i - 1].controller);
             }
     }
-    public void OnCardClicked(BaseCard card)
+    public void OnCardClicked(BaseController card)
     {
         if (selected.Contains(card))  // **변경**: 즉시 사용 모드거나 이미 선택된 카드라면
         {
-            card.UseCard();                            // **변경**: 즉시 사용 모드 해제
+            card.Use();                            // **변경**: 즉시 사용 모드 해제
             DeselectAll();                              // **변경**: 선택 해제
         }
         else
         {
             DeselectAll();
             selected.Add(card);
-            card.cardInstance.Fire(new SignalBus(SignalType.OnSelect));
+            card.baseInstance.Fire(new SignalBus(SignalType.OnSelect));
         }
     }
     public void DeselectAll()
@@ -61,7 +61,7 @@ public abstract class GameStateBase
 
         foreach (var ci in selected)
         {
-            busesToPush.Add(ci.cardInstance.PrepareBus(new SignalBus(SignalType.OnUnSelect)));
+            busesToPush.Add(ci.baseInstance.PrepareBus(new SignalBus(SignalType.OnUnSelect)));
         }
 
         // 3. 모든 준비가 끝난 후, 한 번에 출발시킵니다.
@@ -73,32 +73,32 @@ public abstract class GameStateBase
         selected.Clear();
         _confirmed.Clear();
     }
-    protected virtual void HandleCardClicked(BaseCard bc)
+    protected virtual void HandleCardClicked(BaseController bc)
     {
         // 클릭 시 즉시 사용
         OnCardClicked(bc);
         //bc.cardInstance.Fire(SignalType.OnUse);
     }
 
-    protected virtual void HandleCardHovered(BaseCard bc)
+    protected virtual void HandleCardHovered(BaseController bc)
     {
         DeselectAll();
         selected.Add(bc);
-        bc.cardInstance.Fire(new SignalBus(SignalType.OnSelect));
+        bc.baseInstance.Fire(new SignalBus(SignalType.OnSelect));
     }
 
-    protected virtual void HandleCardUnhovered(BaseCard bc)
+    protected virtual void HandleCardUnhovered(BaseController bc)
     {
         if (selected.Contains(bc))  // **변경**: 즉시 사용 모드거나 이미 선택된 카드라면
         {
             selected.Remove(bc);
-            bc.cardInstance.Fire(new SignalBus(SignalType.OnUnSelect));                           // **변경**: 선택 해제
+            bc.baseInstance.Fire(new SignalBus(SignalType.OnUnSelect));                           // **변경**: 선택 해제
         }
     }
     protected virtual void UseSelectedCards()
     {
         foreach (var c in selected)
-            c.UseCard();
+            c.Use();
         selected.Clear();
     }
 }

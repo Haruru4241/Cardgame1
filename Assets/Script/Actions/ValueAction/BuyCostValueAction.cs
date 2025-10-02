@@ -9,8 +9,8 @@ public class BuyCostValueAction : ValueAction
     public override object GetValue(SignalBus bus)
     {
         var src = bus.GetSourceCard();
-        if (src != null && src.BaseData is CardData cd)
-            return cd.Cost;
+        if (src != null && src._data is CardData cd)
+            return cd.BuyCost;
         return 0;
     }
 }
