@@ -1,53 +1,76 @@
-using UnityEngine;
-using UnityEditor; // Editor 관련 네임스페이스 추가
+// // Assets/Script/Editor/ValueActionGenericEditor.cs (이 코드로 교체하세요)
 
-// ValueActionGeneric 클래스의 인스펙터를 커스텀으로 그리겠다고 명시
-[CustomEditor(typeof(ValueAction))]
-public class ValueActionGenericEditor : Editor
-{
-    // 인스펙터 GUI를 다시 그리는 메서드
-    public override void OnInspectorGUI()
-    {
-        // base.OnInspectorGUI(); // 기본 인스펙터를 그리는 코드. 필요 없으므로 주석 처리
+// using UnityEngine;
+// using UnityEditor;
 
-        // 수정할 대상 스크립트 객체를 가져옴
-        var action = (ValueAction)target;
+// [CustomEditor(typeof(ValueAction))]
+// public class ValueActionGenericEditor : Editor
+// {
+//     // ValueAction에 ValueType Enum이 있어야 합니다.
+//     private SerializedProperty valueTypeProp;
+    
+//     // 각 타입별 프로퍼티
+//     private SerializedProperty intValueProp;
+//     private SerializedProperty floatValueProp;
+//     private SerializedProperty stringValueProp;
+//     private SerializedProperty boolValueProp;
+//     private SerializedProperty objectValueProp;
 
-        // SerializedObject를 사용하면 Undo/Redo가 가능하고, 값이 제대로 저장됨
-        serializedObject.Update();
+//     private void OnEnable()
+//     {
+//         // SerializedProperty들을 미리 찾아둡니다.
+//         valueTypeProp = serializedObject.FindProperty("valueType");
+//         intValueProp = serializedObject.FindProperty("intValue");
+//         floatValueProp = serializedObject.FindProperty("floatValue");
+//         stringValueProp = serializedObject.FindProperty("stringValue");
+//         boolValueProp = serializedObject.FindProperty("boolValue");
+//         objectValueProp = serializedObject.FindProperty("objectValue");
+//     }
 
-        // priority, op 필드는 기본 방식으로 그림
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("priority"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("op"));
+//     public override void OnInspectorGUI()
+//     {
+//         var action = (ValueAction)target;
+//         serializedObject.Update();
 
-        // "값 (Generic)" 헤더와 같은 시각적 구분을 위해 공간을 줌
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("값 (Generic)", EditorStyles.boldLabel);
+//         // 공통 필드들을 그립니다.
+//         EditorGUILayout.PropertyField(serializedObject.FindProperty("calcType"));
+//         EditorGUILayout.PropertyField(serializedObject.FindProperty("op"));
+//         EditorGUILayout.PropertyField(serializedObject.FindProperty("priority"));
+        
+//         EditorGUILayout.Space();
+//         EditorGUILayout.LabelField("값 설정", EditorStyles.boldLabel);
 
-        // valueType Enum 드롭다운을 그림
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("valueType"));
+//         // 값 제공자(Provider) 스크립트가 아닌, 기본 ValueAction일 때만 값 타입 선택 UI를 보여줍니다.
+//         if (action.GetType() == typeof(ValueAction))
+//         {
+//             EditorGUILayout.PropertyField(valueTypeProp);
 
-        // valueType의 현재 값에 따라 다른 필드를 그림
-        switch (action.valueType)
-        {
-            case ValueAction.ValueType.Int:
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("intValue"), new GUIContent("Value"));
-                break;
+//             // 선택된 valueType에 따라 해당하는 값 필드만 보여줍니다.
+//             switch ((ValueAction.ValueType)valueTypeProp.enumValueIndex)
+//             {
+//                 case ValueAction.ValueType.Int:
+//                     EditorGUILayout.PropertyField(intValueProp, new GUIContent("Value"));
+//                     break;
+//                 case ValueAction.ValueType.Float:
+//                     EditorGUILayout.PropertyField(floatValueProp, new GUIContent("Value"));
+//                     break;
+//                 case ValueAction.ValueType.String:
+//                     EditorGUILayout.PropertyField(stringValueProp, new GUIContent("Value"));
+//                     break;
+//                 case ValueAction.ValueType.Bool:
+//                     EditorGUILayout.PropertyField(boolValueProp, new GUIContent("Value"));
+//                     break;
+//             }
+//         }
+//         else
+//         {
+//             // CountFromTargetSelectorValueProvider 같은 자식 클래스일 경우
+//             // 이 커스텀 에디터 대신 기본 인스펙터를 그리도록 할 수 있습니다.
+//             // 또는 자식 클래스에 맞는 필드를 여기서 직접 그려줄 수도 있습니다.
+//             EditorGUILayout.HelpBox($"값 제공자: {action.GetType().Name}", MessageType.Info);
+//             base.OnInspectorGUI(); // 자식 클래스의 나머지 필드를 기본으로 그립니다.
+//         }
 
-            case ValueAction.ValueType.Float:
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("floatValue"), new GUIContent("Value"));
-                break;
-
-            case ValueAction.ValueType.String:
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("stringValue"), new GUIContent("Value"));
-                break;
-
-            case ValueAction.ValueType.Bool:
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("boolValue"), new GUIContent("Value"));
-                break;
-        }
-
-        // 인스펙터에서 변경된 값을 실제 객체에 적용
-        serializedObject.ApplyModifiedProperties();
-    }
-}
+//         serializedObject.ApplyModifiedProperties();
+//     }
+// }

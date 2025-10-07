@@ -9,15 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b06d25b05c2cf0f4883eb788274ff908, type: 3}
-  m_Name: set2
+  m_Script: {fileID: 11500000, guid: 8ddb1fb6060c2e94b9b635b873b97df7, type: 3}
+  m_Name: "\uC120\uD0DD\uD30C\uAD342"
   m_EditorClassIdentifier: 
   DescriptionKey: 
-  calcType: 6
-  op: 0
-  priority: 3
-  intValue: 5
-  floatValue: 0
-  stringValue: 
-  boolValue: 0
-  objectValue: {fileID: 0}
+  targetSelector: {fileID: 11400000, guid: 2b02cb24b2fdc9042b2d20078267b5ce, type: 2}
+  selectionMode: {fileID: 11400000, guid: d8ba04b4c2891bb429d439105ee865c0, type: 2}
+  requiredCount: 2

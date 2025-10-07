@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: "\uBC84\uC2A4\uBC38\uB958"
   m_EditorClassIdentifier: 
   DescriptionKey: 
-  priority: 3
+  calcType: 9
   op: 0
-  valueType: 0
+  priority: 3
   intValue: 0
   floatValue: 0
   stringValue: 
   boolValue: 0
+  objectValue: {fileID: 0}
+  signalSource: 28
+  valueToExtract: 0

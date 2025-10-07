@@ -9,15 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b06d25b05c2cf0f4883eb788274ff908, type: 3}
-  m_Name: set2
+  m_Script: {fileID: 11500000, guid: 4aad68cb0085b814484f4501c1b40e2a, type: 3}
+  m_Name: "\uD544\uB4DC\uD0C0\uAC9F"
   m_EditorClassIdentifier: 
-  DescriptionKey: 
-  calcType: 6
-  op: 0
-  priority: 3
-  intValue: 5
-  floatValue: 0
-  stringValue: 
-  boolValue: 0
-  objectValue: {fileID: 0}

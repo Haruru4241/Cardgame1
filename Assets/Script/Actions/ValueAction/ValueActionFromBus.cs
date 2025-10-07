@@ -5,25 +5,47 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Value Action from Bus", menuName = "CardGame/Action/Value/Value Action from Bus")]
 public class ValueActionFromBus : ValueAction
 {
-    /// <summary>
-    /// 인스펙터의 고정값 대신, 현재 버스의 셀에서 값을 읽어와 반환합니다.
-    /// </summary>
+    [Header("참조할 버스 신호")]
+    [Tooltip("찾고자 하는 조상 버스의 SignalType 입니다.")]
+    public SignalType signalSource;
+    [Header("참조할 버스 값")]
+    [Tooltip("찾아낸 조상 버스에서 가져올 값의 타입입니다.")]
+    public CalcType valueToExtract;
+    public override void Execute(SignalBus bus)
+    {
+        // 1. GetValue()를 통해 최종적으로 사용할 값을 가져옵니다.
+        //    (이것이 고정값일수도, TargetSelector의 개수일 수도 있습니다.)
+        object finalValue = GetValue(bus);
+        if (finalValue == null) return;
+        GameManager.Instance._logs += $"밸류{calcType}{op}{finalValue} ";
+
+        // 2. 최종 값을 사용하여 '계산 지시서(Cell)'를 만들어 버스에 추가합니다.
+        var cell = new Cell(calcType, op, finalValue, priority);
+        bus.AddCalculationStep(cell);
+    }
     public override object GetValue(SignalBus bus)
     {
-        Debug.Log($"BusValue{bus.ParentBus.CalcKind}{(int)bus.ParentBus.CalcRaw} ");
-        switch (bus.ParentBus.CalcKind)
+        var ancestorBus = bus.ParentBus; // 부모부터 탐색 시작
+
+        while (ancestorBus != null)
         {
-            case CellKind.Int:
-                return (int)bus.ParentBus.CalcRaw;
+            // 1. 현재 탐색 중인 조상의 SignalType이 우리가 찾는 것과 일치하는지 확인합니다.
+            if (ancestorBus.Signal == signalSource)
+            {
+                // 2. 일치하는 버스를 찾았다면, 거기서 원하는 값을 추출하여 즉시 반환합니다.
+                object foundValue = CalculationManager.Instance.Evaluate<object>(ancestorBus, valueToExtract);
+                GameManager.Instance._logs += $"[신호값:{foundValue}] ";
+                return foundValue;
+            }
 
-            case CellKind.Float:
-                return (float)bus.ParentBus.CalcRaw;
-
-            case CellKind.String:
-                return (string)bus.ParentBus.CalcRaw;
-
-            default:
-                return null; // 알 수 없는 타입이면 null 반환
+            // 못 찾았다면, 한 단계 더 윗 조상으로 이동하여 계속 탐색합니다.
+            ancestorBus = ancestorBus.ParentBus;
         }
+
+        // 최상위까지 갔는데도 해당 신호를 가진 조상을 못 찾은 경우
+        Debug.LogWarning($"ValueFromSignalBusAction: 조상 버스 중에서 '{signalSource}' 신호를 찾지 못했습니다.");
+        return null;
+        var EvalValue = CalculationManager.Instance.Evaluate<object>(bus.ParentBus.ParentBus, valueToExtract);
+        return EvalValue;
     }
 }

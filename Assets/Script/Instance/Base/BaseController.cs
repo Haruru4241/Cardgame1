@@ -8,7 +8,7 @@ using TMPro;
 public abstract class BaseController : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Card-Specific UI")]
-    
+
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI descriptionText;
 

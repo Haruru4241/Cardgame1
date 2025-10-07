@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6461a93223f6e24479ec3295f0da7bff, type: 3}
-  m_Name: "\uB370\uBBF8\uC9C0\uCE74\uB4DC"
+  m_Name: "\uC120\uD0DD\uD30C\uAD34"
   m_EditorClassIdentifier: 
   ID: 
-  Name: "\uB370\uBBF8\uC9C0"
+  Name: 4
   Rarity: 0
   Artwork: {fileID: 0}
-  Description: "\uD53C\uD574\uB97C \uC900\uB2E4."
+  Description: 44
   FlavorText: 
-  BuyCost: 3
+  BuyCost: 2
   Tags: []
   faction: 0
   actionEntries:
@@ -38,7 +38,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 0ec03ee26638f4441a1f928006d52def, type: 2}
   - signal: 10
     actions:
-    - {fileID: 11400000, guid: c2c2d984b4c80c1418ee9e11375e5164, type: 2}
+    - {fileID: 11400000, guid: 8897ccfdf0f6d694e8ea9debba9ba907, type: 2}
   - signal: 11
     actions: []
   - signal: 16
@@ -46,6 +46,6 @@ MonoBehaviour:
   - signal: 18
     actions:
     - {fileID: 11400000, guid: 13fa0338759436a4999689a456fa4ca6, type: 2}
-    - {fileID: 11400000, guid: 1660e14f677932c44966e0dc33c34879, type: 2}
+    - {fileID: 11400000, guid: 1651743919474c14c8f713866d649ef0, type: 2}
   cardType: 0
   manaCost: 0

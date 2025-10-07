@@ -16,7 +16,7 @@ public abstract class BaseAction : ScriptableObject
 
         // 1) 평가용 Bus 생성 + 소스 승계
         var evalBus = Bus;
-        evalBus.SetSourceInfo(Bus.ParentBus.GetSourceCard());
+        evalBus.SetSourceInfo(Bus.ParentBus?.GetSourceCard());
 
         if (headActions != null)
         {

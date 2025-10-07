@@ -68,12 +68,12 @@ public abstract class BaseInstance
     protected Processor CreateBaseProcessorAction(
     SignalType signal,
     object value,           // int/float/string/SignalType 모두 가능
+    CalcType typeToProcess,
     CalcOp op = CalcOp.Set  // Set / Add / Sub
 )
     {
-        var action = ScriptableObject
-            .CreateInstance<ValueAction>()
-            .Initialize(op, value);
+        var action = ScriptableObject.CreateInstance<ValueAction>();
+        action.Initialize(op, value, typeToProcess);
 
         var proc = new Processor($"Base_{signal}", isBase: true, owner: this, source: this);
         proc.RegisterAction(signal, action);

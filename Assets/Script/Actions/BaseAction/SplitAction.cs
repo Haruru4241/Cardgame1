@@ -8,10 +8,7 @@ public class SplitAction : BaseAction
 
     public override void Execute(SignalBus bus)
     {
-        if (bus == null || bus.CalcKind != CellKind.Int) return;
-
-        // 1) 셀에서 드로우 개수 해석
-        int count = Mathf.Max(0, (int)bus.CalcRaw);
+        int count = CalculationManager.Instance.Evaluate<int>(bus, CalcType.Draw);
 
         // 2) 드로우 전용 버스 생성 + 소스 정보 복사
         var drawBus = new SignalBus(bus.Signal, bus);

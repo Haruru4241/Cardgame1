@@ -60,9 +60,10 @@ public class TargetSelector : ScriptableObject
         {
             candidates = manualTargets;
         }
-        if (useBusTargetAsPrimary && bus.Target != null)
+
+        if (useBusTargetAsPrimary && bus != null)
         {
-            return new List<BaseInstance> { bus.Target };
+            candidates = CalculationManager.Instance.Evaluate<List<BaseInstance>>(bus, CalcType.TargetList) ?? new List<BaseInstance>();
         }
         if (enemiesOnly)
         {
@@ -80,11 +81,12 @@ public class TargetSelector : ScriptableObject
             if (excludeSelf)
                 candidates = candidates.Where(c => c != origin);
             else if (selectSelfOnly)
-                candidates = candidates.Where(c => c == origin);
+                // candidates = candidates.Where(c => c == origin);
+                return new List<BaseInstance> { origin };
 
             // 4) matchSameData
-            if (matchSameData)
-                candidates = candidates.Where(c => c._data == origin._data);
+                if (matchSameData)
+                    candidates = candidates.Where(c => c._data == origin._data);
 
             // 5) matchSameName
             if (matchSameName)

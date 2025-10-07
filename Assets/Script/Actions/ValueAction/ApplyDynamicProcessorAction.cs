@@ -1,42 +1,63 @@
-// Assets/Script/Actions/ApplyDynamicProcessorAction.cs 경로에 새로 생성하세요.
+// Assets/Script/Actions/ApplyDynamicProcessorAction.cs (이 코드로 교체하세요)
 
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Apply Dynamic Processor Action", menuName = "CardGame/Action/Apply Dynamic Processor")]
 public class ApplyDynamicProcessorAction : BaseAction
 {
-    [Header("새로운 프로세서 설정")]
-    [Tooltip("이 프로세서가 반응할 신호 타입입니다.")]
-    public SignalType signalToReact; // 여기서는 'HPEvaluation'을 지정
+    [Header("1. 누구에게?")]
+    [Tooltip("이 동적 프로세서를 추가할 대상을 지정합니다.")]
+    public TargetSelector targetSelector;
 
-    [Tooltip("프로세서에 담길 ValueAction의 연산 방식입니다.")]
-    public CalcOp operation; // 여기서는 'Sub'(빼기)를 지정
+    [Header("2. 어떤 프로세서를?")]
+    [Tooltip("새로운 프로세서가 반응할 신호")]
+    public SignalType signalToReact;
+    [Tooltip("값을 계산할 때 사용할 연산")]
+    public CalcOp operation;
+    [Tooltip("새로운 ValueAction이 최종적으로 처리할 값의 타입 (예: Health)")]
+    public CalcType valueTypeToProcess;
+
+    [Header("3. 어떤 값으로?")]
+    [Tooltip("프로세서가 사용할 값(Value)을 어디서 가져올지 지정합니다. (예: TakeDamage)")]
+    public CalcType valueSourceType;
 
     public override void Execute(SignalBus bus)
     {
-        Debug.Log($"ApplyProcessor{bus.CalcRaw} ");
-        var source = bus.GetSourceCard(); // 이 액션을 실행하는 주체 (피해를 입는 자신)
-        var target = source; // 이 효과는 자기 자신에게 적용됩니다.
+        var origin = bus.GetSourceCard(); // 이 액션을 실행하는 주체
+        GameManager.Instance._logs += $"({origin}) ";
+        if (origin == null) return;
 
-        if (target == null) return;
+        // ★★★ 1. TargetSelector를 이용해 대상을 찾습니다. ★★★
+        //    - 기준점(origin)은 이 액션을 실행한 카드로 전달합니다.
+        var targets = targetSelector.GetTargets(origin, bus);
 
-        // 1. 현재 버스에서 동적인 값을 가져옵니다. (TakeDamageEvaluation의 최종 피해량)
-        int dynamicValue = (int)bus.CalcRaw;
+        if (targets == null || targets.Count == 0) return;
+        
+        // 1. 현재 버스에서 동적인 값을 가져옵니다. (TakeDamageEvaluation의 최종 피해량 등)
+        object valueFromBus = CalculationManager.Instance.Evaluate<object>(bus, valueSourceType);
 
-        // 2. 가져온 값을 사용하는 새로운 ValueAction을 메모리상에 동적으로 생성합니다.
-        var dynamicValueAction = ScriptableObject.CreateInstance<ValueAction>();
-        dynamicValueAction.Initialize(operation, dynamicValue);
+        // ★★★ 2. 찾은 모든 대상에게 동적 프로세서를 추가합니다. ★★★
+        foreach (var target in targets)
+        {
+            if (target == null) continue;
 
-        // 3. 생성된 ValueAction을 담을 새로운 프로세서를 만듭니다.
-        var newProcessor = new Processor(
-            sourceName: $"DynamicEffect_{signalToReact}",
-            isBase: false,
-            owner: target,
-            source: source
-        );
-        newProcessor.RegisterAction(signalToReact, dynamicValueAction);
+            // 2. 가져온 값을 사용하는 새로운 ValueAction을 메모리상에 동적으로 생성합니다.
+            var dynamicValueAction = ScriptableObject.CreateInstance<ValueAction>();
+            dynamicValueAction.Initialize(operation, valueFromBus, valueTypeToProcess);
 
-        // 4. 대상(자기 자신)에게 완성된 프로세서를 추가합니다.
-        target.AddProcessor(newProcessor);
+            // 3. 생성된 ValueAction을 담을 새로운 프로세서를 만듭니다.
+            var newProcessor = new Processor(
+                sourceName: $"DynamicEffect_{signalToReact}",
+                isBase: false,
+                owner: target,
+                source: origin
+            );
+            newProcessor.RegisterAction(signalToReact, dynamicValueAction);
+
+            // 4. 대상에게 완성된 프로세서를 추가합니다.
+            target.AddProcessor(newProcessor);
+            
+            GameManager.Instance._logs += $"({target._data.name})에게 동적Pro추가 ";
+        }
     }
 }

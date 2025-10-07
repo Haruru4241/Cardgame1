@@ -18,30 +18,35 @@ public class EnemyInstance : BaseInstance
         AddProcessor(CreateBaseProcessorAction(
             SignalType.NameEvaluation,
             data.Name,            // string
+            CalcType.Name,
             CalcOp.Set));
 
         // 설명
         AddProcessor(CreateBaseProcessorAction(
             SignalType.DescriptionEvaluation,
             data.Description,     // string
+            CalcType.Description,
             CalcOp.Set));
 
         // HP
         AddProcessor(CreateBaseProcessorAction(
             SignalType.HPEvaluation,
             data.Health,        // int
+            CalcType.Health,
             CalcOp.Set));
 
         // 피해량
         AddProcessor(CreateBaseProcessorAction(
             SignalType.DealDamageEvaluation,
             data.Damage,        // int
+            CalcType.DealDamage,
             CalcOp.Set));
 
         // 구매 비용
         AddProcessor(CreateBaseProcessorAction(
             SignalType.BuyCostEvaluation,
             data.BuyCost,            // int
+            CalcType.Cost,
             CalcOp.Set));
 
         // 데이터에 정의된 액션들을 프로세서로 등록합니다.

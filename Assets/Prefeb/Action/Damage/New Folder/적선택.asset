@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: "\uC801\uC120\uD0DD"
   m_EditorClassIdentifier: 
   DescriptionKey: 
+  selectionMode: {fileID: 11400000, guid: d8ba04b4c2891bb429d439105ee865c0, type: 2}
   targetSelector: {fileID: 11400000, guid: 1fbe07a1c58591244a161f0b84864583, type: 2}
   requiredCount: 1

@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
     public GameStateBase MainState { get; private set; }
     public GameStateBase SelectState { get; private set; }
+    public GameStateBase InteractionState { get; private set; }
     public GameStateBase MenuState { get; private set; }
 
     public GameStateBase CurrentState { get; set; }
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
 
         MainState = new MainInputState(this);
         SelectState = new SelectState(this);
+        InteractionState = new InteractionState(this);
         MenuState = new MenuState(this);
     }
 

@@ -26,12 +26,19 @@ public class SignalBus
     public ActionBubble FrontBubble => _bubbles.Count > 0 ? _bubbles[0] : null;
 
     // --- 계산 셀: 버스당 1개 ---
-    private readonly Cell _cell = new Cell();
     public BaseInstance Target { get; set; }
 
     // 공개 접근자(원하면 private set 등으로 조절)
-    public CellKind CalcKind => _cell.Kind;
-    public object CalcRaw => _cell.Value;
+
+    public void AddCalculationStep(Cell cell)
+    {
+        if (cell != null)
+        {
+            CalculationRecipe.Add(cell);
+        }
+    }
+
+    public List<Cell> CalculationRecipe { get; private set; } = new List<Cell>();
 
     public SignalBus(SignalType signal, SignalBus parentBus = null)
     {
@@ -96,8 +103,4 @@ public class SignalBus
             .ToList();
     }
     public BaseInstance GetSourceCard() => SourceObject;
-
-    // SignalBus 내부
-    public bool Calc(CalcOp op, object a, object b = null) => _cell.Apply(op, a, b);
-    public void CalcReset() => _cell.Reset(); // 선택
 }

@@ -17,16 +17,25 @@ public class EnemyController : BaseController
     /// </summary>
     public override void UpdateUI()
     {
+        // nameText.text = GetValue<string>(SignalType.NameEvaluation, CalcType.Name);
+        // descriptionText.text = GetValue<string>(SignalType.DescriptionEvaluation, CalcType.Description);
+        // healthText.text = GetValue<int>(SignalType.HPEvaluation, CalcType.Health).ToString();
+        // DamageText.text = GetValue<int>(SignalType.DealDamageEvaluation, CalcType.Damage).ToString();
+
         var busesToPush = new List<SignalBus>();
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.NameEvaluation)));
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.DescriptionEvaluation)));
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.HPEvaluation)));
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.DealDamageEvaluation)));
         ReactionStackManager.Instance.PushBuses(busesToPush);
-        nameText.text = (string)busesToPush[0].CalcRaw;
-        descriptionText.text = (string)busesToPush[1].CalcRaw;
-        healthText.text = ((int)busesToPush[2].CalcRaw).ToString();
-        DamageText.text = ((int)busesToPush[3].CalcRaw).ToString();
+        nameText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[0], CalcType.Name);
+        descriptionText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[1], CalcType.Description);
+        healthText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[2], CalcType.Health);
+        DamageText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[3], CalcType.DealDamage);
+        // nameText.text = (string)busesToPush[0].CalcRaw;
+        // descriptionText.text = (string)busesToPush[1].CalcRaw;
+        // healthText.text = ((int)busesToPush[2].CalcRaw).ToString();
+        // DamageText.text = ((int)busesToPush[3].CalcRaw).ToString();
     }
     public override void Setup(BaseData data, BaseInstance instance)
     {

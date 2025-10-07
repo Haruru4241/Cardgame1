@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: "\uD53C\uD574\uC801\uC6A9"
   m_EditorClassIdentifier: 
   DescriptionKey: 
+  targetSelector: {fileID: 11400000, guid: f483531103c6cb145bd834944df61e5b, type: 2}
   signalToReact: 27
   operation: 2
+  valueTypeToProcess: 1
+  valueSourceType: 9

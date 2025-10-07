@@ -20,24 +20,28 @@ public class CardInstance : BaseInstance
         AddProcessor(CreateBaseProcessorAction(
             SignalType.NameEvaluation,
             data.Name,            // string
+            CalcType.Name,
             CalcOp.Set));
 
         // 설명
         AddProcessor(CreateBaseProcessorAction(
             SignalType.DescriptionEvaluation,
             data.Description,     // string
+            CalcType.Description,
             CalcOp.Set));
 
         // 마나 코스트
         AddProcessor(CreateBaseProcessorAction(
             SignalType.ManaCostEvaluation,
             data.manaCost,        // int
+            CalcType.ManaCost,
             CalcOp.Set));
 
         // 구매 비용
         AddProcessor(CreateBaseProcessorAction(
             SignalType.BuyCostEvaluation,
             data.BuyCost,            // int
+            CalcType.Cost,
             CalcOp.Set));
 
         // 아트워크 (Sprite)  ← 아래 Cell 확장 참고

@@ -28,16 +28,41 @@ public class CardController : BaseController
     /// </summary>
     public override void UpdateUI()
     {
-        var busesToPush = new List<SignalBus>();
+        if (this.baseInstance == null) return;
+
+                var busesToPush = new List<SignalBus>();
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.NameEvaluation)));
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.DescriptionEvaluation)));
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.ManaCostEvaluation)));
         busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.BuyCostEvaluation)));
         ReactionStackManager.Instance.PushBuses(busesToPush);
-        nameText.text = (string)busesToPush[0].CalcRaw; 
-        descriptionText.text = (string)busesToPush[1].CalcRaw; 
-        manaCostText.text = ((int)busesToPush[2].CalcRaw).ToString(); 
-        buyCostText.text = ((int)busesToPush[3].CalcRaw).ToString(); 
+        nameText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[0], CalcType.Name);
+        descriptionText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[1], CalcType.Description);
+        manaCostText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[2], CalcType.ManaCost);
+        buyCostText.text = CalculationManager.Instance.Evaluate<string>(busesToPush[3], CalcType.Cost);
+
+        // --- 핵심 로직 (단 4줄) ---
+        // var busesToPush = new List<SignalBus>();
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.NameEvaluation)));
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.DescriptionEvaluation)));
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.ManaCostEvaluation)));
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.BuyCostEvaluation)));
+        // ReactionStackManager.Instance.PushBuses(busesToPush);
+        // nameText.text = GetValue<string>(SignalType.NameEvaluation, CalcType.Name);
+        // descriptionText.text = GetValue<string>(SignalType.DescriptionEvaluation, CalcType.Description);
+        // manaCostText.text = GetValue<int>(SignalType.ManaCostEvaluation, CalcType.ManaCost).ToString();
+        // buyCostText.text = GetValue<int>(SignalType.BuyCostEvaluation, CalcType.Cost).ToString();
+
+        // var busesToPush = new List<SignalBus>();
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.NameEvaluation)));
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.DescriptionEvaluation)));
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.ManaCostEvaluation)));
+        // busesToPush.Add(this.baseInstance.PrepareBus(new SignalBus(SignalType.BuyCostEvaluation)));
+        // ReactionStackManager.Instance.PushBuses(busesToPush);
+        // nameText.text = (string)busesToPush[0].CalcRaw; 
+        // descriptionText.text = (string)busesToPush[1].CalcRaw; 
+        // manaCostText.text = ((int)busesToPush[2].CalcRaw).ToString(); 
+        // buyCostText.text = ((int)busesToPush[3].CalcRaw).ToString(); 
 
         // // 5) 아트워크 (Sprite)
         // bus.Signal = SignalType.ArtworkEvaluation;
