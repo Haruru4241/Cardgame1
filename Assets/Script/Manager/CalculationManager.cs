@@ -32,10 +32,6 @@ public enum CalcType
     [TypeInfo(typeof(int))] TakeDamage,
     // 새로운 타입을 추가할 때, 이 위에 [TypeInfo(typeof(...))] 와 함께 추가하기만 하면 됩니다.
 }
-// public enum CalcType
-// {
-//     DealDamage, Health, Cost, ManaCost, Name, Description, Draw, TargetList, Money, TakeDamage,
-// }
 public class CalculationManager : MonoBehaviour
 {
     public static CalculationManager Instance { get; private set; }
@@ -57,7 +53,7 @@ public class CalculationManager : MonoBehaviour
         foreach (var memberName in Enum.GetNames(calcTypeEnum))
         {
             var memberInfo = calcTypeEnum.GetField(memberName);
-            
+
             // 멤버 위에 붙어있는 [TypeInfo] 어트리뷰트를 찾습니다.
             var typeInfoAttr = memberInfo.GetCustomAttribute<TypeInfoAttribute>();
             if (typeInfoAttr != null)

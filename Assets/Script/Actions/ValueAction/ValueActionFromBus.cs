@@ -45,7 +45,5 @@ public class ValueActionFromBus : ValueAction
         // 최상위까지 갔는데도 해당 신호를 가진 조상을 못 찾은 경우
         Debug.LogWarning($"ValueFromSignalBusAction: 조상 버스 중에서 '{signalSource}' 신호를 찾지 못했습니다.");
         return null;
-        var EvalValue = CalculationManager.Instance.Evaluate<object>(bus.ParentBus.ParentBus, valueToExtract);
-        return EvalValue;
     }
 }

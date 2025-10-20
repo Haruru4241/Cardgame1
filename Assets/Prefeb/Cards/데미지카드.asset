@@ -16,7 +16,7 @@ MonoBehaviour:
   Name: "\uB370\uBBF8\uC9C0"
   Rarity: 0
   Artwork: {fileID: 0}
-  Description: "\uD53C\uD574\uB97C \uC900\uB2E4."
+  Description: "\uD53C\uD574 {dmg}\uB97C \uC900\uB2E4."
   FlavorText: 
   BuyCost: 3
   Tags: []

@@ -24,6 +24,8 @@ MonoBehaviour:
     count: 1
   - cardData: {fileID: 11400000, guid: 164d1f16e2fcd0d43bb36042a7370d12, type: 2}
     count: 1
+  - cardData: {fileID: 11400000, guid: 16cc55d93ced4064f8f8532e33a3632d, type: 2}
+    count: 8
   onTurnStart:
   - {fileID: 11400000, guid: 81f15c7954875734b8d53f66177b4e15, type: 2}
   - {fileID: 11400000, guid: 1660e14f677932c44966e0dc33c34879, type: 2}

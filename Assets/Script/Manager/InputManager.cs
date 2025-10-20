@@ -9,6 +9,21 @@ public class InputManager : MonoBehaviour
 
     private void Awake() => Instance = this;
 
+    /// <summary>
+    /// 현재 마우스 커서가 위에 있는 대상(카드, 적 등)입니다. 없으면 null 입니다.
+    /// 다른 모든 시스템은 이 변수를 통해 '호버링된 대상' 정보를 얻습니다.
+    /// </summary>
+    public BaseInstance HoveredTarget { get; private set; }
+
+    /// <summary>
+    /// 외부(GameState)에서 호출하여 현재 호버링된 대상 정보를 갱신합니다.
+    /// </summary>
+    public void UpdateHoveredTarget(BaseInstance target)
+    {
+        HoveredTarget = target;
+    }
+
+
     // public void OnCardHovered(BaseCard card)
     // {
     //     SelectCard(card);

@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06d25b05c2cf0f4883eb788274ff908, type: 3}
   m_Name: "\uC14B1"
   m_EditorClassIdentifier: 
-  DescriptionKey: 
-  priority: 3
+  descriptionEntries:
+  - TokenID: dmg
+    EvaluationSignal: 28
+    ValueType: 0
+  calcType: 0
   op: 0
-  valueType: 0
+  priority: 3
   intValue: 1
   floatValue: 0
   stringValue: 
   boolValue: 0
+  objectValue: {fileID: 0}

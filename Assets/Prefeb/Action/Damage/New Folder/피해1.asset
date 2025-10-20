@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11f2a1d55eb2cdc49b2424421d38d989, type: 3}
   m_Name: "\uD53C\uD5741"
   m_EditorClassIdentifier: 
-  DescriptionKey: 
+  descriptionEntries:
+  - TokenID: dmg
+    EvaluationSignal: 28
+    ValueType: 0
   driverSignal: 28
   heads:
   - {fileID: 11400000, guid: 1bea79caf559216438868d3d227db2b7, type: 2}
