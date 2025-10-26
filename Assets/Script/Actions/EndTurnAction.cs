@@ -40,6 +40,7 @@ public class EndTurnAction : BaseAction
         //DeckManager.Instance.ReloadHandUI();
 
         // (옵션) 로그 남기기
-        GameManager.Instance._logs += "[EndTurnAction] 핸드/사용 카드 → 버림 처리\n";
+        //GameManager.Instance._logs += "[EndTurnAction] 핸드/사용 카드 → 버림 처리\n";
+        EventManager.Instance.LogEvent(LogType.Global, $"[EndTurnAction] 핸드/사용 카드 → 버림 처리\n", Bus.Signal, null, null, Bus);
     }
 }

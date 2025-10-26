@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Rule1
   m_EditorClassIdentifier: 
   Rules: []
-  DefaultCollectors: 1
+  DefaultCollectors: 9

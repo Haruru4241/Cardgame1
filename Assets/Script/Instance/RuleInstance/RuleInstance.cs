@@ -18,8 +18,10 @@ public class RuleInstance : BaseInstance
 
     public RuleInstance(GamePreset preset)
     {
-        RegisterProcessor(SignalType.onTurnStart, preset.onTurnStart);
-        RegisterProcessor(SignalType.OnTurnEnd, preset.onTurnEnd);
+        foreach (var entry in preset.gameRules)
+        {
+            RegisterProcessor(entry.signal, entry.actions);
+        }
     }
 
 

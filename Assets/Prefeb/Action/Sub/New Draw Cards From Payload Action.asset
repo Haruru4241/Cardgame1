@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 840dc0d579cba4a459c06cbe1be9f0e0, type: 3}
   m_Name: New Draw Cards From Payload Action
   m_EditorClassIdentifier: 
-  Action: {fileID: 11400000, guid: 95009dc81465fc942bc1d87b088e614a, type: 2}
+  descriptionEntries: []
+  Action: {fileID: 11400000, guid: acda3f9838675864fad210b560d43079, type: 2}
+  CalcType: 6

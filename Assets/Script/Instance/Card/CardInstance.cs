@@ -15,7 +15,8 @@ public class CardInstance : BaseInstance
     // 3) 초기값 프로세서 등록 예시
     public void SetupBaseProcessors(CardData data)
     {
-        GameManager.Instance._logs += $"인스턴스 셋업 - ";
+        //GameManager.Instance._logs += $"인스턴스 셋업 - ";
+        EventManager.Instance.LogEvent(LogType.Debug, $"인스턴스 셋업", SignalType.Debug, null, null, null);
         // 이름
         AddProcessor(CreateBaseProcessorAction(
             SignalType.NameEvaluation,
@@ -62,12 +63,14 @@ public class CardInstance : BaseInstance
 
     public override void Fire(SignalBus bus)
     {
-        var Bubbles = BuildBubblesForSignal(bus);
-        // 버스에 탑승시키고 처리 시작
-        if (Bubbles.Count == 0) return;
-        bus.AddPassengers(Bubbles);
+        List<BaseInstance> relevantInstances = ContextResolverManager.Instance.GetRelevantInstances(this);
+        foreach(var a in relevantInstances)
+        {
+            a.PrepareBus(bus);
+        }
         bus.SetSourceInfo(this);
-        GameManager.Instance._logs += $"fire {bus.Signal}{bus._bubbles.Count} ";
+        EventManager.Instance.LogEvent(LogType.CardPlayed, $"fire{bus.Signal}{bus._bubbles.Count}", bus.Signal, this, null, bus);
+        //GameManager.Instance._logs += $"fire {bus.Signal}{bus._bubbles.Count} ";
         ReactionStackManager.Instance.PushBus(bus);
     }
 }

@@ -42,7 +42,8 @@ public class InteractionState : GameStateBase
             ReturnToPreviousState();
             return;
         }
-        GameManager.Instance._logs += " 선택 모드 진입 ";
+        //GameManager.Instance._logs += " 선택 모드 진입 ";
+        EventManager.Instance.LogEvent(LogType.Debug, $"선택 모드 진입", SignalType.Debug, null, null, null);
         ChangeState(this);
     }
 
@@ -66,7 +67,8 @@ public class InteractionState : GameStateBase
 
     public void CompleteSelection(List<BaseInstance> finalSelection)
     {
-        GameManager.Instance._logs += " 선택 모드 탈출 ";
+        //GameManager.Instance._logs += " 선택 모드 탈출 ";
+        EventManager.Instance.LogEvent(LogType.Debug, $"선택 모드 탈출", SignalType.Debug, null, null, null);
         var result = _confirmed.Select(bc => bc.baseInstance).ToList();
         var onSelected = _onCompleteCallback;
         ChangeState(GameManager.Instance.MainState);

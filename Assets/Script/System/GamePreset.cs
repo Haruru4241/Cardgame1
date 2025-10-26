@@ -8,13 +8,21 @@ using TMPro;
 [CreateAssetMenu(menuName = "CardGame/GamePreset")]
 public class GamePreset : ScriptableObject
 {
+    [Serializable]
+    public struct SignalActionEntry
+    {
+        [Tooltip("이 신호가 발생했을 때...")]
+        public SignalType signal; // 예: SignalType.TurnStart
+
+        [Tooltip("...이 액션들을 발동시킵니다.")]
+        public List<BaseAction> actions; // 예: [DrawCardAction(5), GainManaAction(3)]
+    }
+
     public string deckName;
     [TextArea] public string description;
     public Sprite icon;
     public List<CardEntry> cardEntries = new List<CardEntry>();
-    
-    public List<BaseAction> onTurnStart = new();
-    public List<BaseAction> onTurnEnd = new();
+    public List<SignalActionEntry> gameRules;
 }
 
 [Serializable]

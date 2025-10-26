@@ -15,7 +15,8 @@ public class MoneyActionByCellValue : BaseAction
 
         // // 1) 셀에서 드로우 개수 해석
         // int amount = Mathf.Max(0, (int)bus.CalcRaw);
-        GameManager.Instance._logs += $"Money{operation}{amount} ";
+        //GameManager.Instance._logs += $"Money{operation}{amount} ";
+        EventManager.Instance.LogEvent(LogType.Global, $"Money{operation}{amount}", bus.Signal, null, null, bus);
 
         // 2. 가져온 값으로 돈을 조작합니다.
         Apply(amount);

@@ -27,12 +27,6 @@ public class GameManager : MonoBehaviour
 
     public List<BaseInstance> AllInstances { get; } = new List<BaseInstance>();
 
-    public string _logs = "";
-    [ContextMenu("▶ Show Signal–Processor Bindings")]
-    public void DebugLogBindings()
-    {
-        Debug.Log(_logs);
-    }
     private void Awake()
     {
         if (Instance == null) Instance = this;

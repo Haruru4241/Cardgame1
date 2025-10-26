@@ -13,7 +13,8 @@ public class EnemyInstance : BaseInstance
     {
         // 부모의 BaseData와 자식의 EnemyData를 모두 초기화합니다.
         _data = data;
-        GameManager.Instance._logs += $"인스턴스 셋업 - ";
+        //GameManager.Instance._logs += $"인스턴스 셋업 - ";
+        EventManager.Instance.LogEvent(LogType.Debug, $"인스턴스 셋업", SignalType.Debug, null, null, null);
         // 이름
         AddProcessor(CreateBaseProcessorAction(
             SignalType.NameEvaluation,
@@ -62,7 +63,8 @@ public class EnemyInstance : BaseInstance
         if (Bubbles.Count == 0) return;
         bus.AddPassengers(Bubbles);
         bus.SetSourceInfo(this);
-        GameManager.Instance._logs += $"fire {bus.Signal}{bus._bubbles.Count} ";
+        //GameManager.Instance._logs += $"fire {bus.Signal}{bus._bubbles.Count} ";
+        EventManager.Instance.LogEvent(LogType.CardPlayed, $"fire {bus.Signal}{bus._bubbles.Count}", bus.Signal, null, null, bus);
         ReactionStackManager.Instance.PushBus(bus);
     }
     /// <summary>

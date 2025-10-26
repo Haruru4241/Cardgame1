@@ -33,5 +33,7 @@ public enum SignalType
     TakeDamageEvaluation,
     OnTakeDamage,
     OnDealDamage,
+    Action,
+    Debug,
     // ...다른 신호들 추가 가능
 }

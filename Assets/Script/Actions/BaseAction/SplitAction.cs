@@ -5,10 +5,11 @@ using UnityEngine;
 public class SplitAction : BaseAction
 {
     public BaseAction Action;
+    public CalcType CalcType= CalcType.Draw;
 
     public override void Execute(SignalBus bus)
     {
-        int count = CalculationManager.Instance.Evaluate<int>(bus, CalcType.Draw);
+        int count = CalculationManager.Instance.Evaluate<int>(bus, CalcType);
 
         // 2) 드로우 전용 버스 생성 + 소스 정보 복사
         var drawBus = new SignalBus(bus.Signal, bus);
@@ -25,7 +26,8 @@ public class SplitAction : BaseAction
 
         // 4) 승객 태우고 스택에 Push
         drawBus.AddPassengers(bubbles);
-        GameManager.Instance._logs += $"드로우: {count} ";
+        //GameManager.Instance._logs += $"드로우: {count} ";
+        EventManager.Instance.LogEvent(LogType.ActionExecuting, $"Split: {count}", bus.Signal, null, null, bus);
         ReactionStackManager.Instance.PushBus(drawBus);
     }
 }

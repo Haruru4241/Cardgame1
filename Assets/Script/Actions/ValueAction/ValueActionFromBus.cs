@@ -17,7 +17,8 @@ public class ValueActionFromBus : ValueAction
         //    (이것이 고정값일수도, TargetSelector의 개수일 수도 있습니다.)
         object finalValue = GetValue(bus);
         if (finalValue == null) return;
-        GameManager.Instance._logs += $"밸류{calcType}{op}{finalValue} ";
+        //GameManager.Instance._logs += $"밸류{calcType}{op}{finalValue} ";
+        EventManager.Instance.LogEvent(LogType.Value, $"밸류{calcType}{op}{finalValue}", bus.Signal, null, null, bus);
 
         // 2. 최종 값을 사용하여 '계산 지시서(Cell)'를 만들어 버스에 추가합니다.
         var cell = new Cell(calcType, op, finalValue, priority);
@@ -34,7 +35,8 @@ public class ValueActionFromBus : ValueAction
             {
                 // 2. 일치하는 버스를 찾았다면, 거기서 원하는 값을 추출하여 즉시 반환합니다.
                 object foundValue = CalculationManager.Instance.Evaluate<object>(ancestorBus, valueToExtract);
-                GameManager.Instance._logs += $"[신호값:{foundValue}] ";
+                //GameManager.Instance._logs += $"[신호값:{foundValue}] ";
+                EventManager.Instance.LogEvent(LogType.Value, $"신호값:{foundValue}", bus.Signal, null, null, bus);
                 return foundValue;
             }
 

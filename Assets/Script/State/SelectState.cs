@@ -43,14 +43,16 @@ public class SelectState : GameStateBase
         selected.Clear();
 
         ChangeState(this);
-        GameManager.Instance._logs += " 선택 모드 진입 ";
+        //GameManager.Instance._logs += " 선택 모드 진입 ";
+        EventManager.Instance.LogEvent(LogType.Debug, $"선택 모드 진입", SignalType.Debug, null, null, null);
     }
 
     private void CompleteSelection()
     {
         var result = _confirmed.Select(bc => bc.baseInstance).ToList();
         var onSelected = _onSelected;
-        GameManager.Instance._logs += "선택 모드 탈출";
+        //GameManager.Instance._logs += "선택 모드 탈출";
+        EventManager.Instance.LogEvent(LogType.Debug, $"선택 모드 탈출", SignalType.Debug, null, null, null);
 
         ChangeState(GameManager.Instance.MainState);
 

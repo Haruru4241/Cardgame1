@@ -62,8 +62,8 @@ public class ValueAction : BaseAction
         //    (이것이 고정값일수도, TargetSelector의 개수일 수도 있습니다.)
         object finalValue = GetValue(bus);
         if (finalValue == null) return;
-        GameManager.Instance._logs += $"밸류{op}{finalValue} ";
-
+        //GameManager.Instance._logs += $"밸류{op}{finalValue} ";
+        EventManager.Instance.LogEvent(LogType.Value, $"밸류{op}{finalValue}", bus.Signal, null, null, bus);
         // 2. 최종 값을 사용하여 '계산 지시서(Cell)'를 만들어 버스에 추가합니다.
         var cell = new Cell(calcType, op, finalValue, priority);
         bus.AddCalculationStep(cell);

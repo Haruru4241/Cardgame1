@@ -30,6 +30,7 @@ public enum CalcType
     [TypeInfo(typeof(List<BaseInstance>))] TargetList,
     [TypeInfo(typeof(int))] Money,
     [TypeInfo(typeof(int))] TakeDamage,
+    [TypeInfo(typeof(int))] Repeat,
     // 새로운 타입을 추가할 때, 이 위에 [TypeInfo(typeof(...))] 와 함께 추가하기만 하면 됩니다.
 }
 public class CalculationManager : MonoBehaviour

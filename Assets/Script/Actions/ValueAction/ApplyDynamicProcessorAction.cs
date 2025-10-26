@@ -24,7 +24,6 @@ public class ApplyDynamicProcessorAction : BaseAction
     public override void Execute(SignalBus bus)
     {
         var origin = bus.GetSourceCard(); // 이 액션을 실행하는 주체
-        GameManager.Instance._logs += $"({origin}) ";
         if (origin == null) return;
 
         // ★★★ 1. TargetSelector를 이용해 대상을 찾습니다. ★★★
@@ -57,7 +56,8 @@ public class ApplyDynamicProcessorAction : BaseAction
             // 4. 대상에게 완성된 프로세서를 추가합니다.
             target.AddProcessor(newProcessor);
             
-            GameManager.Instance._logs += $"({target._data.name})에게 동적Pro추가 ";
+            //GameManager.Instance._logs += $"({target._data.name})에게 동적Pro추가 ";
+            EventManager.Instance.LogEvent(LogType.Debug, $"{target._data.name})에게 동적Pro추가", bus.Signal, null, null, bus);
         }
     }
 }

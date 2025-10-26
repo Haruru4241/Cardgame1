@@ -34,16 +34,19 @@ public class ReactionStackManager : MonoBehaviour
     {
         if (_busStack.Count == 0)
         {
-            GameManager.Instance._logs += "프로세스 종료\n ";
+            //GameManager.Instance._logs += "프로세스 종료\n ";
+            EventManager.Instance.LogEvent(LogType.Debug, $"프로세스 종료", SignalType.Debug, null, null, null);
             return;
         }
 
         // 버스에 맨 앞 버블 1회 Next만 지시 (버블 내부 재귀로 소비)
         _currentBus.ProcessSignalAction();
+        //StartProcessing();
     }
     public void Continue()
     {
-        GameManager.Instance._logs += "티켓 만료 ";
+        //GameManager.Instance._logs += "티켓 만료 ";
+        EventManager.Instance.LogEvent(LogType.Debug, $"티켓 만료", SignalType.Debug, null, null, null);
         _busStack.Pop();
         StartProcessing();
     }

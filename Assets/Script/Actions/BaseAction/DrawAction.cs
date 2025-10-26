@@ -12,7 +12,8 @@ public class DrawAction : BaseAction
     {
         var ci = DeckManager.Instance.DrawOne();
         if (ci == null || ci.controller == null) return;
-        GameManager.Instance._logs += $"드로우1 ";
+        //GameManager.Instance._logs += $"드로우1 ";
+        EventManager.Instance.LogEvent(LogType.Draw, $"드로1", bus.Signal,null, null, bus);
 
         // ② 뽑힌 카드의 OnDraw 신호
         var childBus = new SignalBus(SignalType.OnDraw, bus);

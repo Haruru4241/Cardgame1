@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System;                  // Action 델리게이트를 위해
 
 [CreateAssetMenu(menuName = "CardGame/TargetSelector")]
 public class TargetSelector : ScriptableObject
@@ -22,6 +23,22 @@ public class TargetSelector : ScriptableObject
     public bool matchSameFaction = false;
     [Tooltip("특정 파일 타입만 허용")]
     public PileType zone = PileType.None;
+    /// <summary>
+    /// 카드를 가져올 파일(더미)의 위치를 지정합니다.
+    /// </summary>
+    public enum PilePosition
+    {
+        Top,    // 덱 맨 위 (Top)
+        Bottom, // 덱 맨 아래 (Bottom)
+        Random  // 무작위
+    }
+    [Header("2. 위치 설정")]
+    [Tooltip("파일의 어느 부분에서 가져올지 지정합니다. 0은 '전체'를 의미")]
+    public PilePosition Position;
+
+    [Header("3. 수량 설정")]
+    [Tooltip("몇 장을 대상으로 할지 결정합니다. (0 = 파일 전체)")]
+    public int Amount;
 
     [Tooltip("체크하면 다른 모든 조건을 무시하고 오직 적 인스턴스만 찾습니다.")]
     public bool enemiesOnly = false;
@@ -71,9 +88,46 @@ public class TargetSelector : ScriptableObject
         }
         if (zone != PileType.None)
         {
-            candidates = candidates.Where(c =>
+            // 1. 'candidates'를 'zone' 기준으로 필터링하고,
+            //    즉시 '.ToList()'로 변환하여 'filteredList'에 저장합니다.
+            var filteredList = candidates.Where(c =>
                 c.CurrentZone is Pile currentPile && (zone & currentPile.Type) != 0
-            );
+            ).ToList(); // ToList()로 즉시 리스트 생성
+
+            // [수정] 이제 'sourceList'가 아닌 'filteredList'를 기준으로 작업합니다.
+            int amount = Amount;
+
+            // 0은 '전체'를 의미
+            if (amount == 0)
+            {
+                amount = filteredList.Count; // filteredList.Count 사용
+            }
+
+            // 리스트의 총 개수보다 많은 수를 요청하지 않도록 보정
+            int count = Mathf.Min(amount, filteredList.Count); // filteredList.Count 사용
+
+            // 2. 위치(Position)에 따라 'filteredList'의 다른 부분을 가져옴
+            switch (Position)
+            {
+                // [덱 탑] (Top)
+                case PilePosition.Top:
+                    // filteredList의 맨 앞에서 'count'개수만큼 가져옴
+                    return filteredList.Take(count).ToList();
+
+                // [덱 밑] (Bottom)
+                case PilePosition.Bottom:
+                    // filteredList의 (전체 개수 - count)만큼 건너뛰고, 나머지를 가져옴
+                    return filteredList.Skip(filteredList.Count - count).ToList();
+
+                // [무작위] (Random)
+                case PilePosition.Random:
+                    // filteredList를 무작위로 섞은 뒤 'count'개수만큼 가져옴
+                    return filteredList.OrderBy(c => System.Guid.NewGuid()).Take(count).ToList();
+
+                default:
+                    // 유효하지 않은 Position일 경우, 빈 리스트 반환 (기존 로직 유지)
+                    return new List<BaseInstance>();
+            }
         }
         if (origin != null)
         {
@@ -85,8 +139,8 @@ public class TargetSelector : ScriptableObject
                 return new List<BaseInstance> { origin };
 
             // 4) matchSameData
-                if (matchSameData)
-                    candidates = candidates.Where(c => c._data == origin._data);
+            if (matchSameData)
+                candidates = candidates.Where(c => c._data == origin._data);
 
             // 5) matchSameName
             if (matchSameName)

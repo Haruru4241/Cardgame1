@@ -15,7 +15,8 @@ public class Cell
         this.Operation = op;
         this.Value = value;
         this.Priority = priority;
-        GameManager.Instance._logs += $"셀{type}{value}{op}{priority} ";
+        //GameManager.Instance._logs += $"셀{type}{value}{op}{priority} ";
+        EventManager.Instance.LogEvent(LogType.Value, $"셀{type}{value}{op}{priority}", SignalType.Debug, null, null, null);
     }
 }
 

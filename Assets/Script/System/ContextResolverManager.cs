@@ -47,7 +47,7 @@ public class ContextResolverManager : MonoBehaviour
         {
             // ★★★ 이제 위치(ZoneMask) 조건만 검사합니다 ★★★
             if (rule.RequiredZoneMask != PileType.None && (currentLocation & rule.RequiredZoneMask) == 0) continue;
-            
+
             // 우선순위 비교 (여전히 유효)
             if (bestMatch == null || rule.Priority > bestMatch.Priority)
             {
@@ -64,19 +64,16 @@ public class ContextResolverManager : MonoBehaviour
     private List<BaseInstance> CollectInstances(CollectorType collectors, BaseInstance source)
     {
         var collectedInstances = new List<BaseInstance>();
-
+        if ((collectors & CollectorType.Source) != 0)
+            collectedInstances.Add(source);
         if ((collectors & CollectorType.Global) != 0 && DeckManager.Instance.Rule != null)
             collectedInstances.Add(DeckManager.Instance.Rule);
         if ((collectors & CollectorType.Owner) != 0 && source.Owner != null)
             collectedInstances.Add(source.Owner);
-        if ((collectors & CollectorType.Source) != 0)
-            collectedInstances.Add(source);
         if ((collectors & CollectorType.Target) != 0 && InputManager.Instance.HoveredTarget != null)
             collectedInstances.Add(InputManager.Instance.HoveredTarget);
         // Zone 수집 로직은 필요시 추가...
 
         return collectedInstances.Distinct().ToList();
     }
-
-    // DetermineCurrentConditionFor 메서드는 완전히 제거됩니다.
 }

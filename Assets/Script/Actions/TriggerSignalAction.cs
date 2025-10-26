@@ -19,7 +19,8 @@ public class TriggerSignalAction : BaseAction
 
         foreach (var target in targets)
         {
-            GameManager.Instance._logs += $"타겟{target._data.Name} 트리거{signal} ";
+            //GameManager.Instance._logs += $"타겟{target._data.Name} 트리거{signal} ";
+            EventManager.Instance.LogEvent(LogType.ActionExecuting, $"타겟{target._data.Name} 트리거{signal}", Bus.Signal, null, null, Bus);
             target.Fire(new SignalBus(signal, Bus));
         }
     }

@@ -24,11 +24,19 @@ MonoBehaviour:
     count: 1
   - cardData: {fileID: 11400000, guid: 164d1f16e2fcd0d43bb36042a7370d12, type: 2}
     count: 1
-  - cardData: {fileID: 11400000, guid: 16cc55d93ced4064f8f8532e33a3632d, type: 2}
+  - cardData: {fileID: 11400000, guid: 3a028eac70ced814c90f6fae1938075d, type: 2}
+    count: 1
+  - cardData: {fileID: 11400000, guid: 0d0149d801b3965429042f6d396350ad, type: 2}
     count: 8
-  onTurnStart:
-  - {fileID: 11400000, guid: 81f15c7954875734b8d53f66177b4e15, type: 2}
-  - {fileID: 11400000, guid: 1660e14f677932c44966e0dc33c34879, type: 2}
-  - {fileID: 11400000, guid: 1651743919474c14c8f713866d649ef0, type: 2}
-  onTurnEnd:
-  - {fileID: 11400000, guid: c752c324f32ff774a8b57c5c5db6ee92, type: 2}
+  gameRules:
+  - signal: 5
+    actions:
+    - {fileID: 11400000, guid: 81f15c7954875734b8d53f66177b4e15, type: 2}
+    - {fileID: 11400000, guid: 1660e14f677932c44966e0dc33c34879, type: 2}
+    - {fileID: 11400000, guid: 1651743919474c14c8f713866d649ef0, type: 2}
+  - signal: 6
+    actions:
+    - {fileID: 11400000, guid: c752c324f32ff774a8b57c5c5db6ee92, type: 2}
+  - signal: 12
+    actions:
+    - {fileID: 11400000, guid: a65dd5e0bb07fb74a9315041b9586f5b, type: 2}

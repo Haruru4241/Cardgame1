@@ -34,7 +34,8 @@ public class SelectAction : BaseAction
             // 후보 목록에 추가
             result.Add(ci);
         }
-        GameManager.Instance._logs += $"\n 선택 후보자 {result.Count} ";
+        //GameManager.Instance._logs += $"\n 선택 후보자 {result.Count} ";
+        EventManager.Instance.LogEvent(LogType.Global, $"\n 선택 후보자 {result.Count}", SignalType.Action);
 
         return result;
     }
