@@ -5,7 +5,7 @@ using System;
 public class MoveToPileAction : BaseAction
 {
     // ✅ 전역 PileType 재사용 (중복 enum 제거)
-    public PileType targetPile;
+    public ZoneType targetPile;
 
     public override void Execute(SignalBus bus)
     {
@@ -26,7 +26,7 @@ public class MoveToPileAction : BaseAction
         fromPile?.Remove(card);
         toPile.Add(card);
         
-        dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
+        dm.ReloadCustomUI(dm.GetPile(ZoneType.Hand).Cards);
         //GameManager.Instance._logs += $"MoveToPileAction {dm.GetPile(PileType.Hand).Cards.Count}-> ";
         // --- 3. 신호 방송 ---
         // 데이터 이동이 모두 끝난 후, 관련된 파일들의 변경 신호를 순서대로 방송합니다.
@@ -53,7 +53,7 @@ public class MoveToPileAction : BaseAction
         fromPile?.Remove(card);
         toPile.Add(card);
         
-        dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
+        dm.ReloadCustomUI(dm.GetPile(ZoneType.Hand).Cards);
         //GameManager.Instance._logs += $"3 {dm.GetPile(PileType.Hand).Cards.Count} ";
         //EventManager.Instance.LogEvent(LogType.Global, $"Money{operation}{amount}", bus.Signal, null, null, bus);
         // --- 3. 신호 방송 ---

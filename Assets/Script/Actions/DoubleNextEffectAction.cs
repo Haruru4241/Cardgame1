@@ -13,11 +13,11 @@ public class DoubleNextEffectAction : BaseAction
 
     public override void Execute(SignalBus Bus)
     {
-        var candidates = DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList();
+        var candidates = DeckManager.Instance.GetPile(ZoneType.Hand).Cards.ToList();
         var selectState = GameManager.Instance.SelectState as SelectState;
 
         selectState.StartSelection(
-            ()=>DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList(),
+            ()=>DeckManager.Instance.GetPile(ZoneType.Hand).Cards.ToList(),
             requiredCount,
             list => OnSelectionFinished(list, Bus),
             Bus // 🔹 현재 버스 전달

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public abstract class BaseAction : ScriptableObject
 {
@@ -17,6 +18,8 @@ public abstract class BaseAction : ScriptableObject
         // 1) 평가용 Bus 생성 + 소스 승계
         var evalBus = Bus;
         evalBus.SetSourceInfo(Bus.ParentBus?.GetSourceCard());
+
+        EventManager.Instance.LogEvent(LogType.ActionExecuting, $"SequenceAction{headActions.Count()} {tailActions.Count()}", Bus.Signal, null, null, Bus);
 
         if (headActions != null)
         {

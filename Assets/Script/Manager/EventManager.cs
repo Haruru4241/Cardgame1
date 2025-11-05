@@ -165,6 +165,7 @@ public class EventManager : MonoBehaviour
                 sb.AppendLine($"[T{log.TurnNumber}] [{log.Type}] \"{log.Message}\"");
             }
         }
+        GUIUtility.systemCopyBuffer = sb.ToString();
 
         // 최종 문자열을 콘솔에 한 번만 출력합니다.
         Debug.Log(sb.ToString());
@@ -260,6 +261,7 @@ public class EventManager : MonoBehaviour
         {
             PrintBusNode(rootBus, 0, sb, logsByBus, busTree);
         }
+        GUIUtility.systemCopyBuffer = sb.ToString();
 
         Debug.Log(sb.ToString());
     }

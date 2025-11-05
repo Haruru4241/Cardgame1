@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public class EndTurnAction : BaseAction
 {
     // 옵션: 핸드/사용/버려질 PileType을 필드로 노출하면 에디터에서 수정 가능
-    public PileType handPile    = PileType.Hand;
-    public PileType usedPile    = PileType.Used;
-    public PileType discardPile = PileType.Discard;
+    public ZoneType handPile    = ZoneType.Hand;
+    public ZoneType usedPile    = ZoneType.Used;
+    public ZoneType discardPile = ZoneType.Discard;
 
     public override void Execute(SignalBus Bus)
     {
@@ -36,7 +36,7 @@ public class EndTurnAction : BaseAction
 
         // UI 갱신 (DeckManager에서 제공하는 유틸)
         var dm = DeckManager.Instance;
-        dm.ReloadCustomUI(dm.GetPile(PileType.Hand).Cards);
+        dm.ReloadCustomUI(dm.GetPile(ZoneType.Hand).Cards);
         //DeckManager.Instance.ReloadHandUI();
 
         // (옵션) 로그 남기기

@@ -3,6 +3,7 @@ using System;                  // Action 델리게이트를 위해
 using System.Linq;             // ToList() 확장 메서드를 위해
 using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine.EventSystems; // [!] 드래그 인터페이스 사용
 
 public abstract class BaseInstance
 {

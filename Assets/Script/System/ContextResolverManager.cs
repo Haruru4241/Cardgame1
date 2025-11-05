@@ -25,7 +25,7 @@ public class ContextResolverManager : MonoBehaviour
 
         // 1. 현재 '위치'만 판별합니다.
         Pile currentPile = sourceInstance.CurrentZone as Pile;
-        PileType currentLocation = currentPile != null ? currentPile.Type : PileType.None;
+        ZoneType currentLocation = currentPile != null ? currentPile.Type : ZoneType.None;
 
         // 2. 판별된 위치를 바탕으로 어떤 대상을 수집할지 '규칙'을 가져옵니다.
         CollectorType collectorsToUse = GetCollectorsForLocation(currentLocation); // 내부 메서드 이름 변경
@@ -40,13 +40,13 @@ public class ContextResolverManager : MonoBehaviour
     /// <summary>
     /// [내부 메서드 1] 규칙 세트(SO)를 읽어 현재 '위치'에 가장 적합한 '수집 대상' 마스크를 찾습니다.
     /// </summary>
-    private CollectorType GetCollectorsForLocation(PileType currentLocation) // 메서드 이름 변경
+    private CollectorType GetCollectorsForLocation(ZoneType currentLocation) // 메서드 이름 변경
     {
         ContextRuleEntry bestMatch = null;
         foreach (var rule in _ruleSet.Rules)
         {
             // ★★★ 이제 위치(ZoneMask) 조건만 검사합니다 ★★★
-            if (rule.RequiredZoneMask != PileType.None && (currentLocation & rule.RequiredZoneMask) == 0) continue;
+            if (rule.RequiredZoneMask != ZoneType.None && (currentLocation & rule.RequiredZoneMask) == 0) continue;
 
             // 우선순위 비교 (여전히 유효)
             if (bestMatch == null || rule.Priority > bestMatch.Priority)

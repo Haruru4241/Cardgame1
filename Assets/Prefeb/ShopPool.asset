@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb2801514cb1d4a4a9bcb2e83d36d557, type: 3}
+  m_Name: ShopPool
+  m_EditorClassIdentifier: 
+  availableItems:
+  - {fileID: 11400000, guid: 3a028eac70ced814c90f6fae1938075d, type: 2}
+  - {fileID: 11400000, guid: df704353f3977ef4cbdcc5c33e5e4650, type: 2}
+  - {fileID: 11400000, guid: 164d1f16e2fcd0d43bb36042a7370d12, type: 2}
+  - {fileID: 11400000, guid: 0d0149d801b3965429042f6d396350ad, type: 2}
+  - {fileID: 11400000, guid: 16cc55d93ced4064f8f8532e33a3632d, type: 2}
+  - {fileID: 11400000, guid: b6a8b88a8101ea6488c03a1fa313281d, type: 2}
+  - {fileID: 11400000, guid: 36f41c792d657d54680ddf9633245f12, type: 2}

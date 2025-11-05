@@ -5,12 +5,12 @@ using System.Collections.Generic;
 public class Pile : Zone
 {
     public SignalType PileSignal { get; private set; }
-    public PileType Type { get; private set; }
+    public ZoneType Type { get; private set; }
 
     // 기존 코드 호환을 위해 Cards 프로퍼티 제공(내부 리스트 그대로 노출)
     public List<BaseInstance> Cards => _items;
 
-    public Pile(PileType type, SignalType signal)
+    public Pile(ZoneType type, SignalType signal)
     {
         Type = type;
         PileSignal = signal;

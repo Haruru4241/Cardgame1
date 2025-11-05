@@ -9,10 +9,10 @@ public class MigratePileAction : BaseAction
 {
     [Header("파일(Pile) 이동 설정")]
     [Tooltip("카드를 가져올 원본 파일입니다. (예: Discard)")]
-    public PileType Source;
+    public ZoneType Source;
 
     [Tooltip("카드를 보낼 목적지 파일입니다. (예: Deck)")]
-    public PileType Destination;
+    public ZoneType Destination;
 
     [Header("옵션")]
     [Tooltip("true일 경우, 카드를 Destination으로 옮긴 후 Destination 파일을 섞습니다.")]

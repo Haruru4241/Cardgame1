@@ -12,11 +12,11 @@ public class SelectDestroyAction : BaseAction
 
     public override void Execute(SignalBus Bus)
     {
-        var candidates = DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList();
+        var candidates = DeckManager.Instance.GetPile(ZoneType.Hand).Cards.ToList();
         var selectState = GameManager.Instance.SelectState as SelectState;
 
         selectState.StartSelection(
-            () => DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList(),
+            () => DeckManager.Instance.GetPile(ZoneType.Hand).Cards.ToList(),
             requiredCount,
             selectedList =>
             OnSelectionFinished(selectedList, Bus),

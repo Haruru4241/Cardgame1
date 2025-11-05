@@ -23,7 +23,7 @@ public class SelectAndDestroyAction2 : BaseAction
 
         interactionState.StartSelection(
             selectionMode,
-            () => DeckManager.Instance.GetPile(PileType.Hand).Cards.ToList(),
+            () => DeckManager.Instance.GetPile(ZoneType.Hand).Cards.ToList(),
             requiredCount,
             selectedList => OnSelectionFinished(selectedList, bus),
             bus

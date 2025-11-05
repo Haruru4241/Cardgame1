@@ -22,7 +22,7 @@ public class TargetSelector : ScriptableObject
     [Tooltip("같은 팩션만 허용")]
     public bool matchSameFaction = false;
     [Tooltip("특정 파일 타입만 허용")]
-    public PileType zone = PileType.None;
+    public ZoneType zone = ZoneType.None;
     /// <summary>
     /// 카드를 가져올 파일(더미)의 위치를 지정합니다.
     /// </summary>
@@ -86,7 +86,7 @@ public class TargetSelector : ScriptableObject
         {
             candidates = BattleManager.Instance.enemyInstances;
         }
-        if (zone != PileType.None)
+        if (zone != ZoneType.None)
         {
             // 1. 'candidates'를 'zone' 기준으로 필터링하고,
             //    즉시 '.ToList()'로 변환하여 'filteredList'에 저장합니다.

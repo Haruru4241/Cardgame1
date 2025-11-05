@@ -80,7 +80,7 @@ public class ContextRuleEntry
     public ContextCondition ConditionMask;
 
     [Tooltip("규칙이 발동하기 위해 카드가 위치해야 하는 존(Zone)입니다. (None은 모든 존 허용)")]
-    public PileType RequiredZoneMask;
+    public ZoneType RequiredZoneMask;
 
     [Header("THEN: 다음 대상들을 '모두' 수집한다")]
     [Tooltip("위 조건이 맞을 때 수집할 대상들의 목록입니다.")]

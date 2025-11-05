@@ -11,6 +11,14 @@ public class CardsPlayedThisTurnCondition : ICondition
     [Tooltip("이 턴에 카드를 이 횟수만큼 사용했다면 조건을 만족합니다. (현재 카드 포함)")]
     public int requiredCount = 2; // "카드를 2번 사용했다면"에 해당
 
+    [Header("검사할 신호")]
+    [Tooltip("검사할 SignalType입니다.")]
+    public SignalType signal = SignalType.OnEffect; // (예시)
+
+    [Header("검사할 로그 타입")]
+    [Tooltip("검사할 LogType입니다. (예: CardPlayed)")]
+    public LogType logType = LogType.CardPlayed; // (예시)
+
     /// <summary>
     /// 조건을 검사합니다.
     /// </summary>
@@ -25,10 +33,9 @@ public class CardsPlayedThisTurnCondition : ICondition
         }
 
         var triggeredLogs = EventManager.Instance.FindLogsThisTurn(
-                    // [수정] log.Type이 SignalType인지 확인
-                    log => log.Signal == SignalType.OnEffect
-                );
-
+            log => log.Signal == signal && log.Type == logType
+        );
+        EventManager.Instance.LogEvent(LogType.ActionExecuting, $"CardsPlayed {signal} {triggeredLogs.Count}", bus.Signal, null, null, bus);
         // 찾은 로그의 개수가 요구치(requiredCount)보다 크거나 같은지 확인합니다.
         // MainInputState에서 로그를 먼저 기록했기 때문에, 이 카드를 포함하여 계산됩니다.
         // 즉, 이 카드가 2번째로 사용된 카드라면 playedCardLogs.Count는 2가 됩니다.

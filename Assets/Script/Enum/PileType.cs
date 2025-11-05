@@ -1,7 +1,7 @@
 using System;
 
 [Flags]
-public enum PileType
+public enum ZoneType
 {
     None = 0,
     Rule = 1 << 0, // 1
@@ -11,4 +11,5 @@ public enum PileType
     Hand = 1 << 4, // 16
     Destroy = 1 << 5, // 32
     Used = 1 << 6, // 64
+    Shop = 1 << 7, // 128
 }

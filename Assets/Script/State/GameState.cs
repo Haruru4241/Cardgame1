@@ -36,7 +36,7 @@ public abstract class GameStateBase
         for (int i = 1; i <= 8; i++)
             if (Input.GetKeyDown(i.ToString()))
             {
-                var pileCards = DeckManager.Instance.GetPile(PileType.Hand).Cards;
+                var pileCards = DeckManager.Instance.GetPile(ZoneType.Hand).Cards;
                 if (i - 1 < pileCards.Count)
                     OnCardClicked(pileCards[i - 1].controller);
             }

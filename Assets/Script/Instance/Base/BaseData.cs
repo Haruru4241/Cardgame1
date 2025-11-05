@@ -9,7 +9,7 @@ public class BaseData : ScriptableObject
 {
     public string ID;                 // 카드 고유 ID
     public string Name;
-    public Rarity Rarity;                 // 카드 희귀도 (일반, 희귀 등)
+    public Rarity rarity = Rarity.Common;                // 카드 희귀도 (일반, 희귀 등)
     public Sprite Artwork;
 
 
@@ -35,11 +35,23 @@ public enum CardType
     Unit, Spell, Equipment, Trap, // 필요에 따라 확장
 }
 
+/// <summary>
+/// [!] 아이템 등급을 정의하는 비트 플래그(마스크) Enum입니다.
+/// </summary>
+[Flags] // [!] 비트 플래그로 선언
 public enum Rarity
 {
-    Common, Rare, Epic, Legendary
-}
+    None = 0,
+    Common = 1 << 0, // 1
+    General = 1 << 1, // 2
+    Rare = 1 << 2, // 4
+    Unique = 1 << 3, // 8
 
+    // (참고) 유니티 인스펙터에서 다중 선택으로 
+    // "General = Common | Rare" (3)
+    // "All = ~0" (-1, 모든 비트)
+    // 등을 미리 조합해 둘 수도 있습니다.
+}
 public enum TargetType
 {
     None, Enemy, Ally, All, Self, Field, // 필요에 따라 확장

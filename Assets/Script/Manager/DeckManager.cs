@@ -9,7 +9,7 @@ public class DeckManager : MonoBehaviour
 
     // 전용 필드 제거. 이제 소스 오브 트루스는 리스트 + 타입 딕셔너리
     [SerializeField] private List<Pile> _piles = new(); // 인스펙터에서 보기용
-    private readonly Dictionary<PileType, Pile> _byType = new();
+    private readonly Dictionary<ZoneType, Pile> _byType = new();
 
     public IReadOnlyList<Pile> AllPiles => _piles;
 
@@ -24,7 +24,7 @@ public class DeckManager : MonoBehaviour
     [System.Serializable]
     public class PileSignalEntry
     {
-        public PileType pileType;
+        public ZoneType pileType;
         public SignalType changeSignal;
     }
     [Header("파일-신호 설정")]
@@ -52,8 +52,8 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public Pile GetPile(PileType type) => _byType.TryGetValue(type, out var p) ? p : null;
-    public bool TryGetPile(PileType type, out Pile pile) => _byType.TryGetValue(type, out pile);
+    public Pile GetPile(ZoneType type) => _byType.TryGetValue(type, out var p) ? p : null;
+    public bool TryGetPile(ZoneType type, out Pile pile) => _byType.TryGetValue(type, out pile);
 
     // ----------------- 기존 기능들: 타입 검색 기반으로 동작 -----------------
     public void SetupGame(GamePreset preset)
@@ -62,12 +62,12 @@ public class DeckManager : MonoBehaviour
 
         if (preset == null) { Debug.LogError("덱 프리셋 없음"); return; }
 
-        var deck = GetPile(PileType.Deck);
-        var discard = GetPile(PileType.Discard);
-        var exhaust = GetPile(PileType.Exhaust);
-        var hand = GetPile(PileType.Hand);
-        var used = GetPile(PileType.Used);
-        var rulePile = GetPile(PileType.Rule);
+        var deck = GetPile(ZoneType.Deck);
+        var discard = GetPile(ZoneType.Discard);
+        var exhaust = GetPile(ZoneType.Exhaust);
+        var hand = GetPile(ZoneType.Hand);
+        var used = GetPile(ZoneType.Used);
+        var rulePile = GetPile(ZoneType.Rule);
 
         if (deck == null || hand == null || discard == null)
         {
@@ -102,6 +102,7 @@ public class DeckManager : MonoBehaviour
             temp.RemoveAt(idx);
             deck.Add(ci);
         }
+        deck.Shuffle();
 
         // 룰 인스턴스
         var ruleInst = new RuleInstance(preset);
@@ -110,7 +111,7 @@ public class DeckManager : MonoBehaviour
         rulePile.Add(ruleInst);
 
         //UpdateAllCardUIs();
-        ReloadCustomUI(GetPile(PileType.Hand).Cards);
+        ReloadCustomUI(GetPile(ZoneType.Hand).Cards);
     }
 
     public CardInstance CreateInstanceFromData(CardData data, Transform parent = null, bool active = false)
@@ -138,8 +139,8 @@ public class DeckManager : MonoBehaviour
 
     public BaseInstance DrawOne()
     {
-        var deck = GetPile(PileType.Deck);
-        var discard = GetPile(PileType.Discard);
+        var deck = GetPile(ZoneType.Deck);
+        var discard = GetPile(ZoneType.Discard);
         if (deck == null || discard == null) return null;
 
         if (deck.Cards.Count == 0)
@@ -151,7 +152,7 @@ public class DeckManager : MonoBehaviour
             return null;
 
         var ci = deck.Cards[0];
-        ReloadCustomUI(GetPile(PileType.Hand).Cards);
+        ReloadCustomUI(GetPile(ZoneType.Hand).Cards);
         return ci;
     }
 
@@ -258,7 +259,7 @@ public class DeckManager : MonoBehaviour
         ClearArea(handArea);
 
         // 2. 손패 파일(Hand Pile)에 있는 카드들을 handArea에 순서대로 배치합니다.
-        ArrangeInstancesInArea(GetPile(PileType.Hand).Cards, handArea);
+        ArrangeInstancesInArea(GetPile(ZoneType.Hand).Cards, handArea);
 
         // 3. 현재 전투 중인 모든 적들을 enemyArea에 배치합니다.
         // BattleManager가 적 목록을 관리한다고 가정합니다.

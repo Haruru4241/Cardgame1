@@ -26,9 +26,9 @@ public class MoneyActionByCellValue : BaseAction
     {
         switch (operation)
         {
-            case MoneyOp.Add: PlayerStats.Instance.AddMoney(amount); break;
-            case MoneyOp.Subtract: PlayerStats.Instance.SpendMoney(amount); break;
-            case MoneyOp.Set: PlayerStats.Instance.SetMoney(amount); break;
+            case MoneyOp.Add: PlayerStats.Instance.AddGold(amount); break;
+            case MoneyOp.Subtract: PlayerStats.Instance.SpendGold(amount); break;
+            case MoneyOp.Set: PlayerStats.Instance.SetGold(amount); break;
         }
         UIManager.Instance.SetScore(PlayerStats.Instance.money);
     }

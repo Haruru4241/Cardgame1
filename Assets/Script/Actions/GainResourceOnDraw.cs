@@ -8,6 +8,6 @@ public class GainResourceOnDraw : BaseAction
 
     public override void Execute(SignalBus Bus)
     {
-        PlayerStats.Instance.AddMoney(amount);
+        PlayerStats.Instance.AddGold(amount);
     }
 }

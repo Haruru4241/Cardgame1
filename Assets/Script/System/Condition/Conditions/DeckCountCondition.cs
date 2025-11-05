@@ -6,7 +6,7 @@ public class DeckCountCondition : ICondition
     public enum ComparisonType { LessThan, EqualTo, GreaterThan }
 
     [Tooltip("비교할 덱의 종류입니다.")]
-    public PileType targetDeck = PileType.Deck; // 예: 플레이어 덱
+    public ZoneType targetDeck = ZoneType.Deck; // 예: 플레이어 덱
 
     [Tooltip("비교 방식입니다. (예: 덱 매수가 count보다 적은가?)")]
     public ComparisonType comparison = ComparisonType.EqualTo;

@@ -3,6 +3,7 @@ using System;                  // Action 델리게이트를 위해
 using System.Linq;             // ToList() 확장 메서드를 위해
 using UnityEngine;
 using Unity.VisualScripting;
+
 public class CardInstance : BaseInstance
 {
     public CardInstance(CardData data)
@@ -12,6 +13,7 @@ public class CardInstance : BaseInstance
         CurrentZone = null;
         SetupBaseProcessors(data);
     }
+
     // 3) 초기값 프로세서 등록 예시
     public void SetupBaseProcessors(CardData data)
     {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 
   Name: "\uC774\uBC88\uD1342\uC7A5"
-  Rarity: 0
+  rarity: 2
   Artwork: {fileID: 0}
   Description: "2\uC7A5\uC774\uC0C1\uC774\uB77C\uBA74"
   FlavorText: 

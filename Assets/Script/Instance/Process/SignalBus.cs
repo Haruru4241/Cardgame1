@@ -61,23 +61,45 @@ public class SignalBus
     }
 
     // ── 실행: 맨 앞 버블에만 1회 Next 지시 (버블 내부 재귀 소비)
-    public void ProcessSignalAction()
+    public void ProcessSignalAction(FlowHandler flowHandler)
     {
-        //if (_bubbles.Count == 0 || !HasToken) return;
-        if (_bubbles.Count == 0 || !HasToken) return;
+        // //if (_bubbles.Count == 0 || !HasToken) return;
+        // if (_bubbles.Count == 0 || !HasToken)
+        // {
+        //     EventManager.Instance.LogEvent(LogType.Debug, $"버스 전환{_bubbles.Count()}{HasToken}", SignalType.Debug, null, null, null);
+        //     return;
+        // }
 
-        if (_bubbles[0].GetActions().Count == 0)
+        // if (_bubbles[0].GetActions().Count == 0)
+        // {
+        //     _bubbles.RemoveAt(0);
+        //     EventManager.Instance.LogEvent(LogType.Debug, $"버블 제거{_bubbles.Count()}", SignalType.Debug, null, null, null);
+        //     ReactionStackManager.Instance.Continue();
+        //     return;
+        // }
+
+        // //GameManager.Instance._logs += $"버스 시작{Signal} ";
+        // EventManager.Instance.LogEvent(LogType.Debug, $"버스 시작{Signal}", SignalType.Debug, null, null, null);
+        // _bubbles[0].Next(this);
+
+        // ProcessSignalAction();
+        if (!HasToken)
         {
-            _bubbles.RemoveAt(0);
-            ReactionStackManager.Instance.Continue();
+            // 토큰이 없으면(예: BusModifier에 의해 중지됨), 즉시 버스 종료
             return;
         }
 
-        //GameManager.Instance._logs += $"버스 시작{Signal} ";
+        if (_bubbles.Count == 0)
+        {
+            // 모든 버블이 처리되었으면, 버스 종료
+            EventManager.Instance.LogEvent(LogType.Debug, $"버스 전환{_bubbles.Count()}{HasToken}", SignalType.Debug, null, null, null);
+            ReactionStackManager.Instance.Continue();
+            return;
+        }
         EventManager.Instance.LogEvent(LogType.Debug, $"버스 시작{Signal}", SignalType.Debug, null, null, null);
-        _bubbles[0].Next(this);
+        _bubbles[0].GetNextStep(this).Invoke();
+        if (flowHandler == ReactionStackManager.Instance.CurrentHandler) ReactionStackManager.Instance.StartProcessing();
 
-        ProcessSignalAction();
     }
     public void TrimFrontAndExpireIfEmpty()
     {

@@ -35,5 +35,6 @@ public enum SignalType
     OnDealDamage,
     Action,
     Debug,
+    OnPurchase,
     // ...다른 신호들 추가 가능
 }

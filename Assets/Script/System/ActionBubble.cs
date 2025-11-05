@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-
+using System;
+using System.Linq;
 public class ActionBubble
 {
     public Queue<BaseAction> _queue;
@@ -17,16 +18,24 @@ public class ActionBubble
         _queue = new Queue<BaseAction>();
         if (action != null) _queue.Enqueue(action);
     }
+    /// <summary>
+    /// [아이디어 2: 뱉어내기]
+    /// 이 버블의 '다음 할 일'을 'Action' 델리게이트로 "뱉어냅니다".
+    /// </summary>
+    public Action GetNextStep(SignalBus bus)
+    {
+
+        if (_queue.Count > 0)
+        {
+            EventManager.Instance.LogEvent(LogType.ActionExecuted, $"Execute {_queue.Peek().GetType().Name}", bus.Signal, null, null, bus);
+            return () => { _queue.Dequeue().Execute(bus); };
+        }
+        else return () => { bus.TrimFrontAndExpireIfEmpty(); };
+    }
 
     // 버스가 한 번 호출하면, 토큰이 뺏기지 않는 한 스스로 계속 소비
     public void Next(SignalBus bus)
     {
-        // if (_queue.Count == 0)
-        // {
-        //     bus.TrimFrontAndExpireIfEmpty();
-        //     return;
-        // }
-        //GameManager.Instance._logs += $"Execute {_queue.Peek().GetType().Name} - ";
         EventManager.Instance.LogEvent(LogType.ActionExecuted, $"Execute {_queue.Peek().GetType().Name}", bus.Signal, null, null, bus);
         _queue.Dequeue().Execute(bus);
     }
@@ -45,7 +54,7 @@ public class ActionBubble
         // ValueAction이 전혀 없다면 → 우선순위 없음
         return int.MaxValue;
     }
-    public Queue<BaseAction> GetActions(){ return _queue; }
+    public Queue<BaseAction> GetActions() { return _queue; }
 
     public ActionBubble Clone()
     {

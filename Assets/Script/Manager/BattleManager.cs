@@ -73,25 +73,4 @@ public class BattleManager : MonoBehaviour
             GameManager.Instance.AllInstances.Add(newEnemyInstance);
         }
     }
-    /// <summary>
-    /// (카드로부터 호출됨) 피해 처리 2단계와 3단계를 조율합니다.
-    /// OnDealDamage 신호를 모두에게 전파한 후, 타겟에게 OnTakeDamage 신호를 Fire합니다.
-    /// </summary>
-    public void ProcessPlayerDamage(SignalBus busFromCard)
-    {
-        var attacker = busFromCard.GetSourceCard();
-        var target = busFromCard.Target;
-
-        Debug.Log($"[2. 매니저] 'OnDealDamage'를 모두에게 전파합니다.");
-
-        // OnDealDamage 신호를 담은 새 버스를 만듭니다.
-        var dealBus = new SignalBus(SignalType.OnDealDamage) { Target = target };
-  
-        DeckManager.Instance.BroadcastSignalBus(dealBus);
-
-        // 계산이 끝난 버스를 이용해 타겟에게 OnTakeDamage 신호를 보냅니다.
-        var finalBus = new SignalBus(SignalType.OnTakeDamage) { Target = target };
-
-        target.Fire(finalBus);
-    }
 }
